@@ -8,13 +8,13 @@ console.log(DateFormatter.calculateTimeBetween(day, end))*/
 /*const thuis = new WasteCollectionFetcher("8000", "Hendrik Consciencelaan", "24");
 console.log(await thuis.getCalendar())*/
 
-/*const route = new TrainScheduleFetcher("Brugge", "Oostende");
+/*const route = new TrainScheduleFetcher("Oostende", "Gent-Sint-Pieters");
 
 console.log((await route.getSchedule(3)).data)*/
 
 //console.log(await route.getSchedule())
 
-import TramFetcher from './models/fetchBus.js';
+import TramFetcher from './models/fetchBusSchedule.js';
 const bus = new TramFetcher("Oostende Kapellestraat", "Stene Camelialaan")
 
 console.log((await bus.getSchedule()).data)
