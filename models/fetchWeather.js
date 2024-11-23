@@ -1,7 +1,5 @@
-import { executeWithDetailedHandling } from "../helpers/execute_helper.js";
+import { executeWithDetailedHandling, NotFoundError } from "../helpers/execute_helper.js";
 import RequestBuilder from "../utils/request_builder.js";
-
-import { NotFoundError } from "../helpers/execute_helper.js";
 
 class WeatherFetcher {
     constructor(city) {
