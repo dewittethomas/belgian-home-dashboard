@@ -142,7 +142,7 @@ class DeLijnFetcher {
         });
     }
 
-    async getSchedule(results=5, maxVias=0, lang='nl') {
+    async getSchedule(results=5, maxVias=1, lang='nl') {
         return await executeWithDetailedHandling(async () => {
             const schedule = (await this.handleConnections(this.from, this.to, DateFormatter.getDateTime(false), maxVias, results, lang)).data;
 

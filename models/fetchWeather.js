@@ -22,7 +22,7 @@ class WeatherFetcher {
                 throw new NotFoundError("Error fetching weather.");
             }
 
-            return { data: response.data.current_condition[0] };
+            return { data: response.data };
         });
     }
 
@@ -32,12 +32,16 @@ class WeatherFetcher {
                 throw new NotFoundError("Error fetching data.");
             }
 
+            const condition = data.current_condition[0]
+
             const extraction = {
-                'temperature': data.temp_C,
-                'uvIndex': data.uvIndex,
-                'windSpeed': data.windspeedKmph,
-                'humidity': data.humidity,
-                'pressure': data.pressure 
+                'place': data.nearest_area[0].areaName[0].value,
+                'temperature': condition.temp_C,
+                'feelsLike': condition.FeelsLikeC,
+                'uvIndex': condition.uvIndex,
+                'windSpeed': condition.windspeedKmph,
+                'humidity': condition.humidity,
+                'pressure': condition.pressure 
             }
 
             return { data: extraction }
