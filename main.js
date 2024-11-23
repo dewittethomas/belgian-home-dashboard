@@ -14,10 +14,10 @@ console.log((await route.getSchedule(3)).data)*/
 
 //console.log(await route.getSchedule())
 
-import TramFetcher from './models/fetchBusSchedule.js';
-const bus = new TramFetcher("Oostende Kapellestraat", "Stene Camelialaan")
+import BusFetcher from './models/fetchBusSchedule.js';
+const bus = new BusFetcher("Oostende Kapellestraat", "Stene Camelialaan")
 
-console.log((await bus.getSchedule()).data)
+console.log((await bus.getSchedule()))
 
 //TODO: check for duration, filter on transit but also walking after the last transit
 

@@ -90,8 +90,16 @@ class DeLijnFetcher {
             const departureDateTime = DateFormatter.subtractMinutes(DateFormatter.getDateTime(true, departure.time), departureDelay);
             const arrivalDateTime = DateFormatter.subtractMinutes(DateFormatter.getDateTime(true, arrival.time), arrivalDelay);
             const duration = DateFormatter.calculateTimeBetween(departureDateTime, arrivalDateTime);
-            const transport = transits[0].transport;
             const walking = sections.length !== transits.length;
+
+            const transport = transits.map((transit) => {
+                return {
+                    'line': transit.transport.longName,
+                    'lineNumber': transit.transport.shortName,
+                    'direction': transit.transport.headsign,
+                    'color': transit.transport.color
+                }
+            });
 
             const extraction = {
                 'canceled': false,
@@ -102,12 +110,7 @@ class DeLijnFetcher {
                 'departureDelay': departureDelay,
                 'arrivalDelay': arrivalDelay,
                 'duration': DateFormatter.convertTimeToObject(duration),
-                'transport': {
-                    'line': transport.longName,
-                    'lineNumber': transport.shortName,
-                    'direction': transport.headsign,
-                    'color': transport.color
-                },
+                'transport': transport,
                 'vias': transits.length - 1,
                 'walking': walking
             }
