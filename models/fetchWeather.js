@@ -6,7 +6,7 @@ class WeatherFetcher {
         this.city = city;
     }
 
-    async getWeatherData(city) {
+    async fetchWeatherData(city) {
         return await executeWithDetailedHandling(async () => {
             const params = {
                 'format': 'j1'
@@ -48,7 +48,7 @@ class WeatherFetcher {
 
     async handleWeather() {
         return await executeWithDetailedHandling(async () => {
-            const data = (await this.getWeatherData(this.city)).data;
+            const data = (await this.fetchWeatherData(this.city)).data;
             const weather = (await this.extractWeatherData(data)).data;
             
             return { data: weather };
