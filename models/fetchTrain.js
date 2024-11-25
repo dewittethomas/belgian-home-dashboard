@@ -37,36 +37,34 @@ class TrainScheduleFetcher {
         });
     }
 
-    async extractConnectionData(connection) {
-        return await executeWithDetailedHandling(async () => {
-            const delay = (delay) => DateFormatter.convertSecondsToMinutes(delay);
+    extractConnectionData(connection) {
+        const delay = (delay) => DateFormatter.convertSecondsToMinutes(delay);
 
-            const departure = connection.departure;
-            const arrival = connection.arrival;
-            const departureDelay = departure.delay <= 0 ? 0 : departure.delay;
-            const arrivalDelay = arrival.delay <= 0 ? 0 : arrival.delay;
-            const departureDateTime = DateFormatter.getDateTime(true, (parseInt(departure.time) * 1000));
-            const arrivalDateTime = DateFormatter.getDateTime(true, (parseInt(arrival.time) * 1000));
-            const vias = connection.vias !== undefined ? parseInt(connection.vias.number) : 0;
-            const canceled = departure.canceled !== '0';
+        const departure = connection.departure;
+        const arrival = connection.arrival;
+        const departureDelay = departure.delay <= 0 ? 0 : departure.delay;
+        const arrivalDelay = arrival.delay <= 0 ? 0 : arrival.delay;
+        const departureDateTime = DateFormatter.getDateTime(true, (parseInt(departure.time) * 1000));
+        const arrivalDateTime = DateFormatter.getDateTime(true, (parseInt(arrival.time) * 1000));
+        const vias = connection.vias !== undefined ? parseInt(connection.vias.number) : 0;
+        const canceled = departure.canceled !== '0';
 
-            const duration = (DateFormatter.calculateTimeBetween(departureDateTime, arrivalDateTime));
+        const duration = DateFormatter.calculateTimeBetween(departureDateTime, arrivalDateTime);
 
-            const extraction = {
-                'canceled': canceled,
-                'from': departure.station,
-                'to': arrival.station,
-                'departure': DateFormatter.format(departureDateTime, 'HH:mm'),
-                'arrival': DateFormatter.format(arrivalDateTime, 'HH:mm'),
-                'departureDelay': departureDelay !== 0 ? delay(departureDelay) : 0,
-                'arrivalDelay': arrivalDelay !== 0 ? delay(arrivalDelay) : 0,
-                'duration': DateFormatter.convertTimeToObject(duration),
-                'platform': departure.platform,
-                'vias': vias
-            }
+        const extraction = {
+            'canceled': canceled,
+            'from': departure.station,
+            'to': arrival.station,
+            'departure': DateFormatter.format(departureDateTime, 'HH:mm'),
+            'arrival': DateFormatter.format(arrivalDateTime, 'HH:mm'),
+            'departureDelay': departureDelay !== 0 ? delay(departureDelay) : 0,
+            'arrivalDelay': arrivalDelay !== 0 ? delay(arrivalDelay) : 0,
+            'duration': DateFormatter.convertTimeToObject(duration),
+            'platform': departure.platform,
+            'vias': vias
+        }
 
-            return { data: extraction }
-        });
+        return extraction;
     }
 
     async handleConnections(from, to, time, date, maxVias, results, lang) {
@@ -74,8 +72,8 @@ class TrainScheduleFetcher {
             const items = (await this.fetchConnectionsData(from, to, time, date, results, lang)).data;
 
             const connections = await Promise.all(
-                items.map(async (item) => {
-                    const processedConnection = (await this.extractConnectionData(item)).data;
+                items.map((item) => {
+                    const processedConnection = this.extractConnectionData(item);
 
                     if (processedConnection.vias <= maxVias) {
                         return processedConnection;

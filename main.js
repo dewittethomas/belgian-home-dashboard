@@ -1,5 +1,5 @@
 import WasteCollectionFetcher from './models/fetchWasteCollection.js';
-import TrainScheduleFetcher from './models/fetchTrainSchedule.js';
+import TrainScheduleFetcher from './models/fetchTrain.js';
 import WeatherFetcher from './models/fetchWeather.js';
 import FootballFetcher from './models/fetchFootball.js';
 
@@ -15,7 +15,7 @@ console.log((await route.getSchedule(3)).data)*/
 
 //console.log(await route.getSchedule())
 
-/*import BusFetcher from './models/fetchBusSchedule.js';
+/*import BusFetcher from './models/fetchBus.js';
 const bus = new BusFetcher("Oostende Kapellestraat", "Stene Camelialaan")
 
 console.log((await bus.getSchedule()))*/
@@ -25,5 +25,9 @@ console.log((await bus.getSchedule()))*/
 
 console.log(await weer)*/
 
-const foot = new FootballFetcher("KVDO");
-console.log((await foot.fetchTeam("Manchester")).data[0])
+//const foot = new FootballFetcher("Club Brugge KV");
+//console.log(foot.extractTeamData((await foot.fetchTeam('KVDO')).data))
+//console.log((await foot.getStatistics()).data)
+//console.log(await foot.fetchLastMatches('802530'))
+//console.log(await foot.extractMatchData((await foot.fetchLastMatch('802530')).data))
+//console.log(await foot.extractMatchData((await foot.fetchLastMatch('802530')).data[0]));

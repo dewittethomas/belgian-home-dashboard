@@ -89,30 +89,24 @@ class WasteCollectionFetcher {
         });
     }
 
-    async extractCollectionData(item, lang) {
-        return executeWithDetailedHandling(async () => {
-            const imageUrl = 'https://assets.recycleapp.be/';
+    extractCollectionData(item, lang) {
+        const imageUrl = 'https://assets.recycleapp.be/';
 
-            if (!item || item.type !== 'collection') {
-                throw new NotFoundError("Error fetching item.");
-            }
+        languageSelector(lang);
 
-            languageSelector(lang);
+        const timestamp = DateFormatter.getDateTime(false, item.timestamp);
 
-            const timestamp = DateFormatter.getDateTime(false, item.timestamp);
+        const extraction = {
+            'timestamp': timestamp,
+            'date': DateFormatter.format(timestamp, 'DD-MM-YYYY'),
+            'day': new DateFormatter(timestamp).getDay().weekDay[lang],
+            'type': item.fraction.logo.name[lang],
+            'description': item.fraction.name[lang],
+            'image': imageUrl + item.fraction.logo.regular['1x'],
+            'color': item.fraction.color
+        }
 
-            const extraction = {
-                'timestamp': timestamp,
-                'date': DateFormatter.format(timestamp, 'DD-MM-YYYY'),
-                'day': new DateFormatter(timestamp).getDay().weekDay[lang],
-                'type': item.fraction.logo.name[lang],
-                'description': item.fraction.name[lang],
-                'image': imageUrl + item.fraction.logo.regular['1x'],
-                'color': item.fraction.color
-            }
-
-            return { data: extraction };
-        });
+        return extraction;
     }
 
     async fetchCollectionCalendar(zipCode, street, houseNumber, days, lang) {
@@ -120,7 +114,7 @@ class WasteCollectionFetcher {
             const items = (await this.fetchCollectionData(zipCode, street, houseNumber, days)).data;
 
             const calendar = await Promise.all(
-                items.map(async (item) => (await this.extractCollectionData(item, lang)).data)
+                items.map(async (item) => this.extractCollectionData(item, lang))
             );
 
             return { data: calendar };

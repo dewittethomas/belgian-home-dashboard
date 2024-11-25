@@ -72,62 +72,58 @@ class DeLijnFetcher {
         });
     }
 
-    async extractConnectionData(connection) {
-        return await executeWithDetailedHandling(async () => {
-            const sections = connection.sections;
-            const transits = sections.filter(section => section.travelType === 'transit');
-            
-            if (!transits) {
-                throw new NotFoundError("Failed extracting connection data.")
+    extractConnectionData(connection) {
+        const delay = (delay) => delay === 0 ? 0 : DateFormatter.convertSecondsToMinutes(delay);
+
+        const sections = connection.sections;
+        const transits = sections.filter(section => section.travelType === 'transit');
+        const departure = sections[0].departure;
+        const arrival = sections[sections.length - 1].arrival;
+        const departureDelay = departure.delay !== undefined ? delay(departure.delay) : 0;
+        const arrivalDelay = arrival.delay !== undefined ? delay(arrival.delay) : 0;
+        const departureDateTime = DateFormatter.subtractMinutes(DateFormatter.getDateTime(true, departure.time), departureDelay);
+        const arrivalDateTime = DateFormatter.subtractMinutes(DateFormatter.getDateTime(true, arrival.time), arrivalDelay);
+        const duration = DateFormatter.calculateTimeBetween(departureDateTime, arrivalDateTime);
+        const walking = sections.length !== transits.length;
+
+        const transport = transits.map((transit) => {
+            return {
+                'line': transit.transport.longName,
+                'lineNumber': transit.transport.shortName,
+                'direction': transit.transport.headsign,
+                'color': transit.transport.color
             }
-
-            const delay = (delay) => delay === 0 ? 0 : DateFormatter.convertSecondsToMinutes(delay);
-            
-            const departure = sections[0].departure;
-            const arrival = sections[sections.length - 1].arrival;
-            const departureDelay = departure.delay !== undefined ? delay(departure.delay) : 0;
-            const arrivalDelay = arrival.delay !== undefined ? delay(arrival.delay) : 0;
-            const departureDateTime = DateFormatter.subtractMinutes(DateFormatter.getDateTime(true, departure.time), departureDelay);
-            const arrivalDateTime = DateFormatter.subtractMinutes(DateFormatter.getDateTime(true, arrival.time), arrivalDelay);
-            const duration = DateFormatter.calculateTimeBetween(departureDateTime, arrivalDateTime);
-            const walking = sections.length !== transits.length;
-
-            const transport = transits.map((transit) => {
-                return {
-                    'line': transit.transport.longName,
-                    'lineNumber': transit.transport.shortName,
-                    'direction': transit.transport.headsign,
-                    'color': transit.transport.color
-                }
-            });
-
-            const extraction = {
-                'canceled': false,
-                'from': transits[0].departure.place.name,
-                'to': transits[transits.length - 1].arrival.place.name,
-                'departure': DateFormatter.format(departureDateTime, 'HH:mm'),
-                'arrival': DateFormatter.format(arrivalDateTime, 'HH:mm'),
-                'departureDelay': departureDelay,
-                'arrivalDelay': arrivalDelay,
-                'duration': DateFormatter.convertTimeToObject(duration),
-                'transport': transport,
-                'vias': transits.length - 1,
-                'walking': walking
-            }
-
-            return { data: extraction };
         });
+
+        const extraction = {
+            'canceled': false,
+            'from': transits[0].departure.place.name,
+            'to': transits[transits.length - 1].arrival.place.name,
+            'departure': DateFormatter.format(departureDateTime, 'HH:mm'),
+            'arrival': DateFormatter.format(arrivalDateTime, 'HH:mm'),
+            'departureDelay': departureDelay,
+            'arrivalDelay': arrivalDelay,
+            'duration': DateFormatter.convertTimeToObject(duration),
+            'transport': transport,
+            'vias': transits.length - 1,
+            'walking': walking
+        }
+
+        return extraction;
     }
 
     async handleConnections(fromQuery, toQuery, datetime, maxVias, results, lang) {
         return await executeWithDetailedHandling(async () => {
-            const [from, to] = await Promise.all([this.fetchStop(fromQuery, lang), this.fetchStop(toQuery, lang)]);
+            const [from, to] = await Promise.all([
+                this.fetchStop(fromQuery, lang), 
+                this.fetchStop(toQuery, lang)
+            ]);
 
             const items = (await this.fetchConnections(from.data, to.data, datetime, results, lang)).data;
             
             const connections = await Promise.all(
-                items.map(async (item) => {
-                    const processedConnection = (await this.extractConnectionData(item)).data;
+                items.map((item) => {
+                    const processedConnection = this.extractConnectionData(item);
 
                     if (processedConnection.vias <= maxVias) {
                         return processedConnection;

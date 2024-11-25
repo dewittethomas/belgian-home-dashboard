@@ -24,32 +24,26 @@ class WeatherFetcher {
         });
     }
 
-    async extractWeatherData(data) {
-        return await executeWithDetailedHandling(async () => {
-            if (!data) {
-                throw new NotFoundError("Error fetching data.");
-            }
+    extractWeatherData(data) {
+        const condition = data.current_condition[0]
 
-            const condition = data.current_condition[0]
+        const extraction = {
+            'place': data.nearest_area[0].areaName[0].value,
+            'temperature': condition.temp_C,
+            'feelsLike': condition.FeelsLikeC,
+            'uvIndex': condition.uvIndex,
+            'windSpeed': condition.windspeedKmph,
+            'humidity': condition.humidity,
+            'pressure': condition.pressure 
+        }
 
-            const extraction = {
-                'place': data.nearest_area[0].areaName[0].value,
-                'temperature': condition.temp_C,
-                'feelsLike': condition.FeelsLikeC,
-                'uvIndex': condition.uvIndex,
-                'windSpeed': condition.windspeedKmph,
-                'humidity': condition.humidity,
-                'pressure': condition.pressure 
-            }
-
-            return { data: extraction }
-        });
+        return extraction;
     }
 
     async handleWeather() {
         return await executeWithDetailedHandling(async () => {
             const data = (await this.fetchWeatherData(this.city)).data;
-            const weather = (await this.extractWeatherData(data)).data;
+            const weather = this.extractWeatherData(data);
             
             return { data: weather };
         });
@@ -65,7 +59,6 @@ class WeatherFetcher {
 
             return { data: weather };
         });
-
     }
 }
 
