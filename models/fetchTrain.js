@@ -48,7 +48,6 @@ class TrainScheduleFetcher {
         const arrivalDateTime = DateFormatter.getDateTime(true, (parseInt(arrival.time) * 1000));
         const vias = connection.vias !== undefined ? parseInt(connection.vias.number) : 0;
         const canceled = departure.canceled !== '0';
-
         const duration = DateFormatter.calculateTimeBetween(departureDateTime, arrivalDateTime);
 
         const extraction = {

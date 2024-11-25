@@ -77,6 +77,7 @@ class DeLijnFetcher {
 
         const sections = connection.sections;
         const transits = sections.filter(section => section.travelType === 'transit');
+        const pedestrians = sections.filter(section => section.travelType === 'pedestrian');
         const departure = sections[0].departure;
         const arrival = sections[sections.length - 1].arrival;
         const departureDelay = departure.delay !== undefined ? delay(departure.delay) : 0;
@@ -84,16 +85,19 @@ class DeLijnFetcher {
         const departureDateTime = DateFormatter.subtractMinutes(DateFormatter.getDateTime(true, departure.time), departureDelay);
         const arrivalDateTime = DateFormatter.subtractMinutes(DateFormatter.getDateTime(true, arrival.time), arrivalDelay);
         const duration = DateFormatter.calculateTimeBetween(departureDateTime, arrivalDateTime);
-        const walking = sections.length !== transits.length;
 
         const transport = transits.map((transit) => {
             return {
                 'line': transit.transport.longName,
                 'lineNumber': transit.transport.shortName,
                 'direction': transit.transport.headsign,
-                'color': transit.transport.color
+                'color': transit.transport.color || '#212650'
             }
         });
+
+        const walkingDuration = pedestrians.reduce((sum, pedestrian) => {
+            return sum + pedestrian.travelSummary.duration;
+        }, 0);
 
         const extraction = {
             'canceled': false,
@@ -105,8 +109,7 @@ class DeLijnFetcher {
             'arrivalDelay': arrivalDelay,
             'duration': DateFormatter.convertTimeToObject(duration),
             'transport': transport,
-            'vias': transits.length - 1,
-            'walking': walking
+            'walking': DateFormatter.convertTimeToObject(walkingDuration)
         }
 
         return extraction;
@@ -125,7 +128,7 @@ class DeLijnFetcher {
                 items.map((item) => {
                     const processedConnection = this.extractConnectionData(item);
 
-                    if (processedConnection.vias <= maxVias) {
+                    if (processedConnection.transport.length - 1 <= maxVias) {
                         return processedConnection;
                     }
                     return null;

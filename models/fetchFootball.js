@@ -122,7 +122,7 @@ class FootballFetcher {
             const seasonId = lastFetchableMatch.season.id;
 
             const response = await RequestBuilder.get(`https://www.sofascore.com/api/v1/unique-tournament/${tournamentId}/season/${seasonId}/standings/total`)
-                                    .send();
+                            .send();
 
             return { data: response.data.standings[0] };
         })
@@ -177,7 +177,7 @@ class FootballFetcher {
             const statistics = (await this.handleStatistics(this.team)).data;
 
             if (!statistics) {
-                throw new NotFoundError("Failed fetching Football Team Statistics.");
+                throw new NotFoundError("Failed fetching Football Statistics.");
             }
 
             return { data: statistics };
