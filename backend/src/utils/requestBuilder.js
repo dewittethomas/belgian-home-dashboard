@@ -1,8 +1,6 @@
-import { URL } from 'url';
 import axios from 'axios';
+import { URL } from 'url';
 import { getRandom } from 'random-useragent';
-
-import Logger from './logger.js'
 
 const BASE_HEADERS = {
     'Accept': 'application/json, text/plain, */*',
@@ -25,9 +23,9 @@ class RequestBuilder {
         this.url = new URL(url);
         this.method = method.toUpperCase();
         this.headers = { ...BASE_HEADERS };
-        this.timeout = 5000; // default timeout in milliseconds
+        this.timeout = 5000;
         this.params = {};
-        this.data = null; // used for POST/PUT requests
+        this.data = null;
     }
 
     setHeaders(headers) {
@@ -68,7 +66,7 @@ class RequestBuilder {
             return parseFloat(ua.browserVersion) >= 90;
         });
 
-        Logger.debug(`Sending request to ${this.url} with user-agent ${userAgent}`);
+        console.log("Sending request...")
 
         this.headers['User-Agent'] = userAgent;
 
@@ -90,7 +88,7 @@ class RequestBuilder {
             response.success = response.status >= 200 && response.status < 300;
             return response;
         } catch (error) {
-            Logger.debug(`Error sending request to ${this.url}, status: ${error.response.status}`);
+            console.error(error);
             throw error;
         }
     }   

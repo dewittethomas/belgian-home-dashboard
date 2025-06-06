@@ -1,17 +1,20 @@
-import { executeWithDetailedHandling, NotFoundError } from "../helpers/execute_helper.js";
-import DateFormatter from "../utils/date_formatter.js";
-import RequestBuilder from "../utils/request_builder.js";
-import languageSelector from '../utils/language_selector.js';
-import getResults from "../utils/results_selector.js";
+import { executeWithDetailedHandling, NotFoundError } from "../utils/executionHandler.js";
+import DateFormatter from "../utils/dateFormatter.js";
+import RequestBuilder from "../utils/requestBuilder.js";
+import languageSelector from "../utils/languageSelector.js";
+import getResults from "../utils/resultsHandler.js";
 
-class TrainScheduleFetcher {
-    constructor(from, to) {
+class TrainFetcher {
+    constructor(from, to, maxVias=1, results=5, lang='nl') {
         this.from = from;
         this.to = to;
+        this.maxVias = maxVias;
+        this.results = results;
+        this.lang = lang;
     }
 
     async fetchConnectionsData(from, to, time, date, results, lang) {
-        return await executeWithDetailedHandling(async () => {
+        return executeWithDetailedHandling(async () => {
             const params = {
                 'from': from,
                 'to': to,
@@ -29,21 +32,20 @@ class TrainScheduleFetcher {
                             .setParams(params)
                             .send();
 
-            if (!response.success) {
-                throw new NotFoundError("Error fetching train connections.")
-            }
+            if (!response.success) throw new NotFoundError("Error fetching train connections.");
 
-            return { data: response.data.connection };
+            return response.data.connection;
         });
     }
 
     extractConnectionData(connection) {
-        const delay = (delay) => DateFormatter.convertSecondsToMinutes(delay);
+        const convertDelay = (delay) => DateFormatter.convertSecondsToMinutes(delay);
+        const formatDelay = (delay) => delay <= 0 ? 0 : delay;
 
         const departure = connection.departure;
         const arrival = connection.arrival;
-        const departureDelay = departure.delay <= 0 ? 0 : departure.delay;
-        const arrivalDelay = arrival.delay <= 0 ? 0 : arrival.delay;
+        const departureDelay = formatDelay(departure.delay);
+        const arrivalDelay = formatDelay(arrival.delay);
         const departureDateTime = DateFormatter.getDateTime(true, (parseInt(departure.time) * 1000));
         const arrivalDateTime = DateFormatter.getDateTime(true, (parseInt(arrival.time) * 1000));
         const vias = connection.vias !== undefined ? parseInt(connection.vias.number) : 0;
@@ -56,8 +58,8 @@ class TrainScheduleFetcher {
             'to': arrival.station,
             'departure': DateFormatter.format(departureDateTime, 'HH:mm'),
             'arrival': DateFormatter.format(arrivalDateTime, 'HH:mm'),
-            'departureDelay': departureDelay !== 0 ? delay(departureDelay) : 0,
-            'arrivalDelay': arrivalDelay !== 0 ? delay(arrivalDelay) : 0,
+            'departureDelay': departureDelay !== 0 ? convertDelay(departureDelay) : 0,
+            'arrivalDelay': arrivalDelay !== 0 ? convertDelay(arrivalDelay) : 0,
             'duration': DateFormatter.convertTimeToObject(duration),
             'platform': departure.platform,
             'vias': vias
@@ -67,39 +69,36 @@ class TrainScheduleFetcher {
     }
 
     async handleConnections(from, to, time, date, maxVias, results, lang) {
-        return await executeWithDetailedHandling(async () => {
+        return executeWithDetailedHandling(async () => {
             const items = (await this.fetchConnectionsData(from, to, time, date, results, lang)).data;
 
-            const connections = await Promise.all(
-                items.map((item) => {
-                    const processedConnection = this.extractConnectionData(item);
+            const connections = items.map((item) => {
+                const processedConnection = this.extractConnectionData(item);
 
-                    if (processedConnection.vias <= maxVias) {
-                        return processedConnection;
-                    }
-                    return null;
-                })
-            );
+                if (processedConnection.vias <= maxVias) {
+                    return processedConnection;
+                }
+                return null;
+            });
+            
 
             const filteredConnections = connections.filter((connection) => connection !== null);
 
-            return { data: filteredConnections };
+            return filteredConnections;
         });
     }
 
-    async getSchedule(results=5, maxVias=1, lang='nl') {
-        return await executeWithDetailedHandling(async () => {
+    async getSchedule() {
+        return executeWithDetailedHandling(async () => {
             const dateTime = DateFormatter.getDateTime();
             
-            const schedule = (await this.handleConnections(this.from, this.to, DateFormatter.format(dateTime, 'HHmm'), DateFormatter.format(dateTime, 'DDMMYY'), maxVias, results, lang)).data;
+            const schedule = (await this.handleConnections(this.from, this.to, DateFormatter.format(dateTime, 'HHmm'), DateFormatter.format(dateTime, 'DDMMYY'), this.maxVias, this.results, this.lang)).data;
 
-            if (!schedule) {
-                throw new NotFoundError("Failed fetching Train Schedule.");
-            }
+            if (!schedule) throw new NotFoundError("Failed fetching Train Schedule.");
 
-            return { data: getResults(schedule, results) };
+            return getResults(schedule, this.results);
         });
     }
 }
 
-export default TrainScheduleFetcher;
+export default TrainFetcher;

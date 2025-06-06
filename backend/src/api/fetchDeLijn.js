@@ -1,8 +1,8 @@
-import { executeWithDetailedHandling, NotFoundError } from "../helpers/execute_helper.js";
-import DateFormatter from "../utils/date_formatter.js";
-import RequestBuilder from "../utils/request_builder.js";
-import languageSelector from "../utils/language_selector.js";
-import getResults from "../utils/results_selector.js";
+import { executeWithDetailedHandling, NotFoundError } from "../utils/executionHandler.js";
+import DateFormatter from "../utils/dateFormatter.js";
+import RequestBuilder from "../utils/requestBuilder.js";
+import languageSelector from "../utils/languageSelector.js";
+import getResults from "../utils/resultsHandler.js";
 
 const modes = [
     "bus",
@@ -11,14 +11,17 @@ const modes = [
 ];
 
 class DeLijnFetcher {
-    constructor(from, to) {
+    constructor(from, to, maxVias=1, results=5, lang='nl') {
         this.from = from;
         this.to = to;
+        this.maxVias = maxVias;
+        this.results = results;
+        this.lang = lang;
         this.modes = modes;
     }
 
     async fetchStop(query, lang) {
-        return await executeWithDetailedHandling(async () => {
+        return executeWithDetailedHandling(async () => {
             const params = {
                 'query': query,
                 'lang': lang
@@ -30,19 +33,17 @@ class DeLijnFetcher {
                             .setParams(params)
                             .send();
 
-            if (!response.success) {
-                throw new NotFoundError("Failed fetching stop.");
-            }
+            if (!response.success) throw new NotFoundError("Failed fetching stop.");
 
             const suggestions = response.data.suggestionsByQuery;
             const stops = suggestions.filter((stop) => stop.resultType === 'place');
             
-            return { data: stops[0] };
+            return stops[0];
         });
     }
 
-    async fetchConnections(from, to, datetime, results, lang) {
-        return await executeWithDetailedHandling(async () => {
+    async fetchConnections(from, to, datetime, modes, results, lang) {
+        return executeWithDetailedHandling(async () => {
             const body = {
                 'alternatives': (results - 1),
                 'departureTime': DateFormatter.convertDateTimeToString(datetime),
@@ -53,7 +54,7 @@ class DeLijnFetcher {
                 },
                 'destinationName': to.title,
                 'lang': lang,
-                'modes': this.modes,
+                'modes': modes,
                 'origin': {
                     'type': 'Coordinate',
                     'lt': from.position.lt, 
@@ -68,20 +69,20 @@ class DeLijnFetcher {
                             .setData(body)
                             .send();
 
-            return { data: response.data.routes };
+            return response.data.routes;
         });
     }
 
     extractConnectionData(connection) {
-        const delay = (delay) => delay === 0 ? 0 : DateFormatter.convertSecondsToMinutes(delay);
+        const convertDelay = (delay) => DateFormatter.convertSecondsToMinutes(delay);
 
         const sections = connection.sections;
         const transits = sections.filter(section => section.travelType === 'transit');
         const pedestrians = sections.filter(section => section.travelType === 'pedestrian');
         const departure = sections[0].departure;
         const arrival = sections[sections.length - 1].arrival;
-        const departureDelay = departure.delay !== undefined ? delay(departure.delay) : 0;
-        const arrivalDelay = arrival.delay !== undefined ? delay(arrival.delay) : 0;
+        const departureDelay = departure.delay !== undefined ? convertDelay(departure.delay) : 0;
+        const arrivalDelay = arrival.delay !== undefined ? convertDelay(arrival.delay) : 0;
         const departureDateTime = DateFormatter.subtractMinutes(DateFormatter.getDateTime(true, departure.time), departureDelay);
         const arrivalDateTime = DateFormatter.subtractMinutes(DateFormatter.getDateTime(true, arrival.time), arrivalDelay);
         const duration = DateFormatter.calculateTimeBetween(departureDateTime, arrivalDateTime);
@@ -115,14 +116,14 @@ class DeLijnFetcher {
         return extraction;
     }
 
-    async handleConnections(fromQuery, toQuery, datetime, maxVias, results, lang) {
-        return await executeWithDetailedHandling(async () => {
+    async handleConnections(fromQuery, toQuery, datetime, modes, maxVias, results, lang) {
+        return executeWithDetailedHandling(async () => {
             const [from, to] = await Promise.all([
                 this.fetchStop(fromQuery, lang), 
                 this.fetchStop(toQuery, lang)
             ]);
 
-            const items = (await this.fetchConnections(from.data, to.data, datetime, results, lang)).data;
+            const items = (await this.fetchConnections(from.data, to.data, datetime, modes, results, lang)).data;
             
             const connections = await Promise.all(
                 items.map((item) => {
@@ -137,19 +138,17 @@ class DeLijnFetcher {
 
             const filteredConnections = connections.filter((connection) => connection !== null);
             
-            return { data: filteredConnections };
+            return filteredConnections;
         });
     }
 
-    async getSchedule(results=5, maxVias=1, lang='nl') {
-        return await executeWithDetailedHandling(async () => {
-            const schedule = (await this.handleConnections(this.from, this.to, DateFormatter.getDateTime(false), maxVias, results, lang)).data;
+    async getSchedule() {
+        return executeWithDetailedHandling(async () => {
+            const schedule = (await this.handleConnections(this.from, this.to, DateFormatter.getDateTime(false), this.modes, this.maxVias, this.results, this.lang)).data;
 
-            if (!schedule) {
-                throw new NotFoundError("Failed fetching De Lijn Schedule.");
-            }
+            if (!schedule) throw new NotFoundError("Failed fetching De Lijn Schedule.");
 
-            return { data: getResults(schedule, results) };
+            return getResults(schedule, this.results);
         });
     }
 }

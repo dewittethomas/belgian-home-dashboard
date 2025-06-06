@@ -1,7 +1,7 @@
 import moment from 'moment-timezone';
-import fs from 'fs';
 
-const weekdays = JSON.parse(fs.readFileSync('./assets/data/weekdays.json'));
+import weekdays from './weekdays.js';
+
 const timezone = 'Europe/Brussels';
 
 class DateFormatter {
@@ -57,6 +57,7 @@ class DateFormatter {
     }
 
     static convertSecondsToMinutes(seconds) {
+        if (seconds === 0) return 0;
         return Math.floor(seconds / 60);
     }
 

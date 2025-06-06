@@ -1,19 +1,21 @@
-import { executeWithDetailedHandling, NotFoundError } from "../helpers/execute_helper.js";
-import DateFormatter from "../utils/date_formatter.js";
-import RequestBuilder from "../utils/request_builder.js";
-import languageSelector from '../utils/language_selector.js';
+import { executeWithDetailedHandling, NotFoundError } from "../utils/executionHandler.js";
+import DateFormatter from "../utils/dateFormatter.js";
+import RequestBuilder from "../utils/requestBuilder.js";
+import languageSelector from '../utils/languageSelector.js';
 
 const headers = { 'X-Consumer': 'recycleapp.be' };
 
 class WasteCollectionFetcher {
-    constructor(zipCode, street, houseNumber) {
+    constructor(zipCode, street, houseNumber, days=14, lang='nl') {
         this.zipCode = zipCode;
         this.street = street;
         this.houseNumber = houseNumber;
+        this.days = days;
+        this.lang = lang;
     }
 
     async fetchZipCodeId(zipCode) {
-        return await executeWithDetailedHandling(async () => {
+        return executeWithDetailedHandling(async () => {
             const params = {
                 'q': zipCode
             }
@@ -23,16 +25,14 @@ class WasteCollectionFetcher {
                             .setHeaders(headers)
                             .send();
 
-            if (!response.success || !response.data.total) {
-                throw new NotFoundError("Error fetching ZIP Code ID's.");
-            }
+            if (!response.success || !response.data.total) throw new NotFoundError("Error fetching ZIP Code ID.");
 
-            return { data: response.data.items[0].id };
+            return response.data.items[0].id;
         });
     }
 
     async fetchStreetId(street, zipCodeId) {
-        return await executeWithDetailedHandling(async () => {
+        return executeWithDetailedHandling(async () => {
             const params = {
                 'q': street,
                 'zipcodes': zipCodeId
@@ -43,11 +43,9 @@ class WasteCollectionFetcher {
                             .setHeaders(headers)
                             .send();
 
-            if (!response.success || !response.data.total) {
-                throw new NotFoundError("Error fetching Street ID's.");
-            }
+            if (!response.success || !response.data.total) throw new NotFoundError("Error fetching Street ID.");
             
-            return { data: response.data.items[0].id };
+            return response.data.items[0].id;
         });
     }
 
@@ -55,16 +53,14 @@ class WasteCollectionFetcher {
         const zipCodeId = (await this.fetchZipCodeId(zipCode)).data;
         const streetId = (await this.fetchStreetId(street, zipCodeId)).data;
         
-        const response = {
+        return {
             'zipCodeId': zipCodeId,
             'streetId': streetId,
             'houseNumber': houseNumber
-        }
-
-        return response;
+        };
     }
 
-    async fetchCollectionData(zipCode, street, houseNumber, days, size=100) {
+    async fetchCollectionData(zipCode, street, houseNumber, days) {
         const address = await this.fetchAddressData(zipCode, street, houseNumber);
 
         const fromDate = DateFormatter.format(DateFormatter.getDateTime());
@@ -76,7 +72,7 @@ class WasteCollectionFetcher {
             'houseNumber': address.houseNumber,
             'fromDate': fromDate,
             'untilDate': untilDate,
-            'size': size
+            'size': 100
         };
 
         return executeWithDetailedHandling(async () => {
@@ -85,51 +81,63 @@ class WasteCollectionFetcher {
                             .setHeaders(headers)
                             .send();
 
-            return { data: response.data.items };
+            return response.data.items;
         });
     }
 
     extractCollectionData(item, lang) {
         const imageUrl = 'https://assets.recycleapp.be/';
-
+        
         languageSelector(lang);
 
         const timestamp = DateFormatter.getDateTime(false, item.timestamp);
-
-        const extraction = {
+        
+        return {
             'timestamp': timestamp,
             'date': DateFormatter.format(timestamp, 'DD-MM-YYYY'),
             'day': new DateFormatter(timestamp).getDay().weekDay[lang],
-            'type': item.fraction.logo.name[lang],
-            'description': item.fraction.name[lang],
+            'type': item.fraction.name[lang],
             'image': imageUrl + item.fraction.logo.regular['1x'],
             'color': item.fraction.color
-        }
-
-        return extraction;
+        };
     }
 
     async fetchCollectionCalendar(zipCode, street, houseNumber, days, lang) {
         return executeWithDetailedHandling(async () => {
             const items = (await this.fetchCollectionData(zipCode, street, houseNumber, days)).data;
+            const calendar = items.reduce((acc, item) => {
+                const collectionData = this.extractCollectionData(item, lang);
+                const existingDay = acc.find(entry => entry.date === collectionData.date);
 
-            const calendar = await Promise.all(
-                items.map(async (item) => this.extractCollectionData(item, lang))
-            );
+                if (existingDay) {
+                    existingDay.collections.push({
+                        type: collectionData.type,
+                        image: collectionData.image,
+                        color: collectionData.color
+                    });
+                } else {
+                    acc.push({
+                        date: collectionData.date,
+                        day: collectionData.day,
+                        collections: [{
+                            type: collectionData.type,
+                            image: collectionData.image,
+                            color: collectionData.color
+                        }]
+                    });
+                }
+                return acc;
+            }, []);
 
-            return { data: calendar };
+            return calendar;
         });
     }
 
-    async getCalendar(days=7, lang='nl') {
+    async getCalendar() {
         return executeWithDetailedHandling(async () => {
-            const calendar = (await this.fetchCollectionCalendar(this.zipCode, this.street, this.houseNumber, days, lang)).data;
-
-            if (!calendar) {
-                throw new NotFoundError("Failed fetching Waste Collection Calendar.");
-            }
-
-            return { data: calendar };
+            const calendar = (await this.fetchCollectionCalendar(this.zipCode, this.street, this.houseNumber, this.days, this.lang)).data;
+            if (!calendar) throw new NotFoundError("Failed fetching Waste Collection Calendar.");
+            return calendar;
         });
     }
 }
