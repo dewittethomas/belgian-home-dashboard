@@ -1,22 +1,18 @@
-import WeatherApiGateway from "../gateways/WeatherApiGateway.js";
+import WasteCollectionApiGateway from "../gateways/WasteCollectionApiGateway.js";
+import dayjs from "dayjs";
 
-const WeatherApiUseCase = {
-    async getWeatherData(city) {
-        const data = await WeatherApiGateway.getWeatherData(city);
+const WasteCollectionApiUseCase = {
+    async getNextWasteCollection(zipCode, street, houseNumber) {
+        const zipCodeId = await WasteCollectionApiGateway.fetchZipCodeId(zipCode);
+        const streetId = await WasteCollectionApiGateway.fetchStreetId(street, zipCodeId);
 
-        const condition = data.current_condition[0];
+        const fromDate = dayjs().format('YYYY-MM-DD');
+        const untilDate = dayjs().add(7, 'day').format('YYYY-MM-DD');
 
-        return {
-            city: data.nearest_area[0].areaName[0].value,
-            temperature: condition.temp_C,
-            feelsLike: condition.FeelsLikeC,
-            uvIndex: condition.uvIndex,
-            windSpeed: condition.windspeedKmph,
-            humidity: condition.humidity,
-            pressure: condition.pressure,
-            description: condition.weatherDesc[0].value
-        }
+        const data = await WasteCollectionApiGateway.fetchCollectionData(zipCodeId, streetId, houseNumber, fromDate, untilDate);
+
+        return data;
     }
 }
 
-export default WeatherApiUseCase;
+export default WasteCollectionApiUseCase;
