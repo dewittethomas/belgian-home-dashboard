@@ -5,20 +5,21 @@ cacheManager.init();
 
 const WeatherApiGateway = {
     async getWeatherData(city) {
-        const params = {
-            'format': 'j1'
-        };
-        
-        const cachedData = await cacheManager.getData(`Weather: ${city}`);
+        const cacheKey = `Weather: ${city}`;
+        const cachedData = await cacheManager.getData(cacheKey);
 
         if (cachedData) {
             return cachedData;
         } else {
+            const params = {
+                'format': 'j1'
+            };
+
             const response = await RequestBuilder.get(`https://wttr.in/${city}`)
                 .setParams(params)
                 .send();
 
-            cacheManager.setData(`Weather: ${city}`, response.data, 1800);
+            cacheManager.setData(cacheKey, response.data, 1800);
 
             return response.data;
         }

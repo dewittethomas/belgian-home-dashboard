@@ -2,7 +2,7 @@ import WasteCollectionApiGateway from "../gateways/WasteCollectionApiGateway.js"
 import dayjs from "dayjs";
 
 const WasteCollectionApiUseCase = {
-    async getNextWasteCollection(zipCode, street, houseNumber) {
+    async getNextWasteCollections(zipCode, street, houseNumber) {
         const zipCodeId = await WasteCollectionApiGateway.fetchZipCodeId(zipCode);
         const streetId = await WasteCollectionApiGateway.fetchStreetId(street, zipCodeId);
 
@@ -11,7 +11,14 @@ const WasteCollectionApiUseCase = {
 
         const data = await WasteCollectionApiGateway.fetchCollectionData(zipCodeId, streetId, houseNumber, fromDate, untilDate);
 
-        return data;
+        const collections = data.filter(item => !(item.exception?.replacedBy))
+
+        const types = collections.map(item => ({
+            date: item.timestamp,
+            name: item.fraction.name.nl
+        }));
+
+        return types;
     }
 }
 

@@ -11,7 +11,7 @@ const WasteCollectionApiController = {
                 return res.status(400).json({ error: "Missing one or more required query parameters: zipCode, street, houseNumber" });
             }
 
-            const data = await WasteCollectionApiUseCase.getNextWasteCollection(zipCode, street, houseNumber);
+            const data = await WasteCollectionApiUseCase.getNextWasteCollections(zipCode, street, houseNumber);
             res.status(200).json(data);
         } catch (err) {
             console.error(err);
