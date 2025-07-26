@@ -3,7 +3,9 @@ import redis from 'redis';
 let client;
 
 async function init() {
-    client = redis.createClient();
+    client = redis.createClient({
+        url: `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`
+    });
     await client.connect();
 }
 
