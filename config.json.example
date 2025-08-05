@@ -1,0 +1,44 @@
+{
+    "language": "nl",
+    "name": "Home Dashboard",
+    "configuration": {
+        "weather": [ "" ],
+        "wasteCollection": {
+            "street": "",
+            "houseNumber": "",
+            "zipCode": ""
+        },
+        "train": {
+            "routes": [
+                {
+                    "from": "",
+                    "to": ""
+                },
+                {
+                    "from": "",
+                    "to": ""
+                }
+            ]
+        },
+        "bus": {
+            "routes": [
+                {
+                    "from": "",
+                    "to": ""
+                }
+            ]
+        },
+        "tram": {
+            "routes": [
+                {
+                    "from": "",
+                    "to": ""
+                },
+                {
+                    "from": "",
+                    "to": ""
+                }
+            ]
+        }
+    }
+}
