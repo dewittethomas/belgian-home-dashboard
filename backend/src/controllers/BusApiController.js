@@ -3,8 +3,10 @@ import BusApiUseCase from "../usecases/BusApiUseCase.js";
 const BusApiController = {
     async handle(req, res) {
         try {
-            const from = await BusApiUseCase.getStop(req.query.from);
-            const to = await BusApiUseCase.getStop(req.query.to);
+            const [ from, to ] = await Promise.all([
+                BusApiUseCase.getStop(req.query.from),
+                BusApiUseCase.getStop(req.query.to)
+            ]); 
 
             if (!from || !to) {
                 return res.status(400).json({ error: "Missing required query parameter: from, to" });
