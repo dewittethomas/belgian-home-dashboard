@@ -19,8 +19,8 @@ const TrainApiUseCase = {
         const data = await TrainApiGateway.fetchConnectionsData(from, to, time, date, results, lang);
 
         const connections = data.map(connection => ({
-            departure: dayjs.unix(connection.departure.time).format('HH:mm'),
-            arrival: dayjs.unix(connection.arrival.time).format('HH:mm'),
+            departure: dayjs.unix(connection.departure.time).tz("Europe/Brussels").format('HH:mm'),
+            arrival: dayjs.unix(connection.arrival.time).tz("Europe/Brussels").format('HH:mm'),
             delay: Math.floor(connection.departure.delay / 60).toString(),
             platform: connection.departure.platform,
             transfers: connection.vias ? parseInt(connection.vias.number) : 0,
