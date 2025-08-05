@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 3000 
 
 # ---- RUN APP ----
-CMD [ "node", "src/server.js" ]
+CMD [ "node", "backend/src/server.js" ]
