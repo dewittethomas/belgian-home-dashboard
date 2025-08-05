@@ -1,5 +1,11 @@
 import DeLijnApiGateway from "../gateways/DeLijnApiGateway.js";
+
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc.js";
+import timezone from "dayjs/plugin/timezone.js";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const BusApiUseCase = {
     async getStop(query) {
@@ -27,8 +33,8 @@ const BusApiUseCase = {
         }, 0);
 
         return {
-            departure: dayjs.unix((departure.time  / 1000) - delay).format('HH:mm'),
-            arrival: dayjs.unix((arrival.time / 1000)).format('HH:mm'),
+            departure: dayjs.unix((departure.time / 1000) - delay).tz("Europe/Brussels").format('HH:mm'),
+            arrival: dayjs.unix((arrival.time / 1000)).tz("Europe/Brussels").format('HH:mm'),
             delay: Math.floor(delay / 60).toString(),
             transport: {
                 shortName: transits[0].transport.shortName,
