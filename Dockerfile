@@ -1,18 +1,12 @@
-# ---- BASE IMAGE ----
-FROM node:20
+FROM node:22-alpine3.22
 
-# ---- CREATE APP DIR ----
 WORKDIR /app
 
-# ---- COPY FILES ----
 COPY package*.json ./
 RUN npm install
 
-# ---- COPY APP CODE ----
 COPY . .
 
-# ---- EXPOSE PORT ----
 EXPOSE 3000 
 
-# ---- RUN APP ----
 CMD [ "node", "backend/src/server.js" ]
