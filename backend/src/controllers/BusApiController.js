@@ -1,11 +1,12 @@
 import BusApiUseCase from "../usecases/BusApiUseCase.js";
+import DeLijnApiUseCase from "../usecases/DeLijnApiUseCase.js";
 
 const BusApiController = {
     async handle(req, res) {
         try {
             const [ from, to ] = await Promise.all([
-                BusApiUseCase.getStop(req.query.from),
-                BusApiUseCase.getStop(req.query.to)
+                DeLijnApiUseCase.getStop(req.query.from),
+                DeLijnApiUseCase.getStop(req.query.to)
             ]); 
 
             if (!from || !to) {

@@ -1,11 +1,12 @@
 import TramApiUseCase from "../usecases/TramApiUseCase.js";
+import DeLijnApiUseCase from "../usecases/DeLijnApiUseCase.js";
 
 const TramApiController = {
     async handle(req, res) {
         try {
             const [ from, to ] = await Promise.all([
-                TramApiUseCase.getStop(req.query.from),
-                TramApiUseCase.getStop(req.query.to)
+                DeLijnApiUseCase.getStop(req.query.from),
+                DeLijnApiUseCase.getStop(req.query.to)
             ]);
 
             if (!from || !to) {
