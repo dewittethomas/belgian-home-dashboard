@@ -15,7 +15,7 @@ const WasteCollectionApiUseCase = {
 
         const types = collections.map(item => ({
             date: item.timestamp,
-            name: item.fraction.name.nl
+            type: item.fraction.name.nl
         }));
 
         return types;
