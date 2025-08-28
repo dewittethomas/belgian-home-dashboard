@@ -23,23 +23,19 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import apiService from "@/services/apiService"; // adjust path
+import apiService from "@/services/apiService";
 
-// Props
 const props = defineProps({
   city: { type: String, required: true }
 });
 
-// Reactive state
 const data = ref(null);
 const loading = ref(true);
 const error = ref(null);
 
-// Fetch weather data for this city
 const fetchWeather = async () => {
   try {
-    console.log("yes")
-    const response = await apiService.getWeatherData(props.city); // adapt depending on your API
+    const response = await apiService.getWeatherData(props.city);
     data.value = response;
   } catch (err) {
     error.value = "Failed to fetch weather";

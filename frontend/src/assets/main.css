@@ -19,10 +19,9 @@ body {
 .card-container {
     color: var(--blue) !important;
     margin: 2rem 0;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 1rem;
-    flex-wrap: wrap;
 }
 
 .card-container .card {
