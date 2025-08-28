@@ -4,19 +4,17 @@ defineProps({
   departures: { 
     type: Array, 
     default: () => [] 
-  },
-  lineClass: { type: String, default: '' } // e.g., 'nmbs', 'de-lijn'
+  }
 })
 </script>
 
 <template>
   <div class="card">
-    <!-- Optional colored line for the card -->
-    <div v-if="lineClass" class="card-title" :class="lineClass">
+    <div class="card-title nmbs">
       <p>
         <span>Trein naar</span>
-        <img src="./images/arrow-right.svg" alt="Arrow">
-        <span class="destination">{{ destination }}</span>
+        <img src="@/assets/arrow-right.svg" alt="Arrow">
+        <span class="subject">{{ destination }}</span>
       </p>
     </div>
     
