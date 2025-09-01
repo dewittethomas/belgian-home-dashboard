@@ -19,14 +19,13 @@ const TrainApiUseCase = {
         const data = await TrainApiGateway.fetchConnectionsData(from, to, time, date, lang);
 
         const connections = data
-            .filter(item => item.departure.platform !== '?')
+            .filter(item => (item.departure.platform !== '?') && (item.departure.canceled !== '1') && (item.arrival.canceled !== '1'))
             .map(connection => ({
                 departure: dayjs.unix(connection.departure.time).utc().tz("Europe/Brussels").format('HH:mm'),
                 arrival: dayjs.unix(connection.arrival.time).utc().tz("Europe/Brussels").format('HH:mm'),
                 delay: Math.floor(connection.departure.delay / 60).toString(),
                 platform: connection.departure.platform,
                 transfers: connection.vias ? parseInt(connection.vias.number) : 0,
-                canceled: connection.departure.canceled !== '0'
             }));
 
         return getResults(connections, results);
