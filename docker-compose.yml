@@ -3,26 +3,30 @@ services:
     build: ./frontend
     ports:
       - "80:80"
-    restart: unless-stopped
     networks:
-      - backend
+      - dashboard
     depends_on:
-      - api
+      - backend
+    restart: unless-stopped
 
-  api:
+  backend:
     build: ./backend
     ports:
       - "3000:3000"
-    volumes:
-      - api:/app/src
     networks:
-      - backend
+      - dashboard
     depends_on:
       - redis
     environment:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   redis:
     image: redis:8.2.0
@@ -31,12 +35,11 @@ services:
     volumes:
       - redis:/data
     networks:
-      - backend
+      - dashboard
     restart: unless-stopped
 
 volumes:
   redis:
-  api:
 
 networks:
-  backend:
+  dashboard:

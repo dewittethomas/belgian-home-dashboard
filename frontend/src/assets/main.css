@@ -1,10 +1,10 @@
 /* Main styling */
 
-/* Colors */
-@import url("colors.css");
-
 /* Reset defaults */
 @import url("reset.css");
+
+/* Colors */
+@import url("colors.css");
 
 /* General */
 
@@ -12,6 +12,9 @@ body {
     color: var(--dark-blue);
     background-color: var(--grey);
     font-family: "Figtree", sans-serif;
+}
+
+.container {
     width: 80%;
     margin: 1rem auto;
 }
