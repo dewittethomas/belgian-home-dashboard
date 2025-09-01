@@ -41,7 +41,6 @@ const error = ref(null);
 const fetchWasteCollections = async () => {
   try {
     const response = await apiService.getWasteCollections(props.zipCode, props.street, props.houseNumber);
-    console.log(response)
     data.value = response;
   } catch (err) {
     error.value = "Failed to fetch waste collections";
