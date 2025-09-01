@@ -1,6 +1,16 @@
 services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - backend
+    depends_on:
+      - api
+
   api:
-    build: .
+    build: ./backend
     ports:
       - "3000:3000"
     volumes:
