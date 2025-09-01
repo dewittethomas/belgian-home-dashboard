@@ -1,6 +1,7 @@
 services:
   frontend:
     build: ./frontend
+    image: dashboard-frontend:latest
     ports:
       - "80:80"
     networks:
@@ -11,6 +12,7 @@ services:
 
   backend:
     build: ./backend
+    image: dashboard-backend:latest
     ports:
       - "3000:3000"
     networks:
@@ -21,17 +23,9 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   redis:
     image: redis:8.2.0
-    ports:
-      - "6379:6379"
     volumes:
       - redis:/data
     networks:
