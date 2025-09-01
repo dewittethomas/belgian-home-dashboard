@@ -1,30 +1,30 @@
 <template>
   <div class="card">
-    <div class="card-title nmbs">
+    <div class="card-title de-lijn">
       <p>
-        <span>Trein naar</span>
+        <span>Tram naar</span>
         <span class="subject">{{ to }}</span>
       </p>
     </div>
 
     <!-- Loading state -->
-    <p v-if="loading">Loading train connections...</p>
+    <p v-if="loading">Loading tram connections...</p>
 
     <!-- Error state -->
     <p v-if="error">{{ error }}</p>
 
     <!-- Data -->
     <ul class="list" v-else>
-      <li v-for="(trip, i) in data" :key="i">
-        <p>
-          {{ trip.departure }} - {{ trip.arrival }}
-          <span 
-            class="transport"
-            :style="{ backgroundColor: '#666666' }">
-            {{ trip.platform }}
-          </span>
-        </p>
-      </li>
+        <li v-for="(trip, i) in data" :key="i">
+            <p>
+              {{ trip.departure }} - {{ trip.arrival }}
+              <span 
+                class="transport"
+                :style="{ backgroundColor: trip.transport.color }">
+                {{ trip.transport.shortName }}
+              </span>
+            </p>
+        </li>
     </ul>
   </div>
 </template>
@@ -42,17 +42,17 @@ const data = ref([]);
 const loading = ref(true);
 const error = ref(null);
 
-const fetchTrainConnections = async () => {
+const fetchTramConnections = async () => {
   try {
-    const response = await apiService.getTrainConnections(props.from, props.to);
+    const response = await apiService.getTramConnections(props.from, props.to);
     data.value = response;
   } catch (err) {
-    error.value = "Failed to fetch train connections";
+    error.value = "Failed to fetch tram connections";
     console.error(err);
   } finally {
     loading.value = false;
   }
 };
 
-onMounted(fetchTrainConnections);
+onMounted(fetchTramConnections);
 </script>

@@ -1,9 +1,9 @@
 <template>
   <div class="card">
-    <div class="card-title">
+    <div class="card-title weather">
       <p>
         <span>Weer in</span>
-        <span class="destination">{{ city }}</span>
+        <span class="subject">{{ city }}</span>
       </p>
     </div>
 
@@ -13,10 +13,14 @@
     <!-- Error state -->
     <p v-if="error">{{ error }}</p>
 
-    <!-- Weather data -->
-    <div v-if="data">
-      <p>Temperature: {{ data.temperature }}°C</p>
-      <p>Condition: {{ data.condition }}</p>
+    <!-- Data -->
+    <div v-if="data" class="weather-data">
+      <p class="temperature">{{ data.temperature }}°C</p>
+      <p>Voelt als {{ data.feelsLike }}°C</p>
+      <p class="weather-specific">
+        <span>🌬️ {{ data.windSpeed }} km/h</span>
+        <span>☀️ UV {{ data.uvIndex }}</span>
+      </p>
     </div>
   </div>
 </template>

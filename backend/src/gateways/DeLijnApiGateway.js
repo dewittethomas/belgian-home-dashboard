@@ -29,15 +29,15 @@ const DeLijnApiGateway = {
         }
     },
 
-    async fetchConnections(from, to, datetime, modes, results, lang) {
-        const cacheKey = `De Lijn (connection): ${from.position} ${to.position}`;
+    async fetchConnections(from, to, datetime, modes, lang) {
+        const cacheKey = `De Lijn (connection): from(${from.position.lt} ${from.position.ln}) to(${to.position.lt} ${to.position.ln}) ${modes}`;
         const cachedData = await cacheManager.getData(cacheKey);
 
         if (cachedData) {
             return cachedData;
         } else {
             const body = {
-                'alternatives': (results - 1),
+                'alternatives': 5,
                 'departureTime': datetime,
                 'destination': {
                     'type': 'Coordinate',

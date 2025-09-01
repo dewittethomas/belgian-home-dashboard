@@ -1,4 +1,6 @@
 import DeLijnApiGateway from "../gateways/DeLijnApiGateway.js";
+import getResults from "../utils/resultHandler.js";
+
 import dayjs from "dayjs";
 
 const TramApiUseCase = {
@@ -17,7 +19,6 @@ const TramApiUseCase = {
     extractConnectionData(connection) {
         const sections = connection.sections;
         const transits = sections.filter(section => section.travelType === 'transit');
-        const pedestrians = sections.filter(section => section.travelType === 'pedestrian');
         const departure = transits[0].departure;
         const arrival = sections[sections.length - 1].arrival;
 
@@ -40,14 +41,14 @@ const TramApiUseCase = {
     async getConnections(from, to) {
         const datetime = dayjs().toISOString();
         const modes = ['lightRail'];
-        const results = 2;
+        const results = 3;
         const lang = 'nl';
 
-        const data = await DeLijnApiGateway.fetchConnections(from, to, datetime, modes, results, lang);
+        const data = await DeLijnApiGateway.fetchConnections(from, to, datetime, modes, lang);
 
         const connections = data.map(connection => this.extractConnectionData(connection));
 
-        return connections;
+        return getResults(connections, results);
     }
 }
 

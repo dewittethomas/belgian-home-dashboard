@@ -9,7 +9,7 @@ import tramApiRoutes from './tramApiRoutes.js';
 const router = express.Router();
 
 router.use('/weather', weatherApiRoutes);
-router.use('/waste', wasteCollectionApiRoutes);
+router.use('/waste-collection', wasteCollectionApiRoutes);
 router.use('/train', trainApiRoutes);
 router.use('/bus', busApiRoutes);
 router.use('/tram', tramApiRoutes);

@@ -9,42 +9,43 @@ const apiService = {
         })
         return res.data;
     },
-    // getWasteCollection: (zipCode, street, number) => {
-    //     axios.get(`${API_BASE_URL}/waste`, {
-    //         params: {
-    //             zipCode,
-    //             street,
-    //             number
-    //         }
-    //     }).then(res => res.data);
-    // },
-    // getTrainConnections: (from, to) => {
-    //     axios.get(`${API_BASE_URL}/train`, {
-    //         params: {
-    //             from,
-    //             to
-    //         }
-    //     })
-    //     .then(res => res.data);
-    // },
-    // getBusConnections: (from, to) => {
-    //     axios.get(`${API_BASE_URL}/bus`, {
-    //         params: {
-    //             from,
-    //             to
-    //         }
-    //     })
-    //     .then(res => res.data);
-    // },
-    // getTramConnections: (from, to) => {
-    //     axios.get(`${API_BASE_URL}/tram`, {
-    //         params: {
-    //             from,
-    //             to
-    //         }
-    //     })
-    //     .then(res => res.data);
-    // }
+    async getWasteCollections(zipCode, street, houseNumber) {
+        const res = await axios.get(`${API_BASE_URL}/waste-collection`, {
+            params: {
+                zipCode,
+                street,
+                houseNumber
+            }
+        })
+        return res.data;
+    },
+    async getTrainConnections(from, to) {
+        const res = await axios.get(`${API_BASE_URL}/train`, {
+            params: {
+                from,
+                to
+            }
+        })
+        return res.data;
+    },
+    async getBusConnections(from, to) {
+        const res = await axios.get(`${API_BASE_URL}/bus`, {
+            params: {
+                from,
+                to
+            }
+        })
+        return res.data;
+    },
+    async getTramConnections(from, to) {
+        const res = await axios.get(`${API_BASE_URL}/tram`, {
+            params: {
+                from,
+                to
+            }
+        })
+        return res.data;
+    }
 }
 
 export default apiService;

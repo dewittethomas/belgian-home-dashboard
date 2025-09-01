@@ -1,4 +1,5 @@
 import DeLijnApiGateway from "../gateways/DeLijnApiGateway.js";
+import getResults from "../utils/resultHandler.js";
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
@@ -49,14 +50,28 @@ const BusApiUseCase = {
     async getConnections(from, to) {
         const datetime = dayjs().toISOString();
         const modes = ['bus'];
-        const results = 2;
+        const results = 3;
         const lang = 'nl';
+        const maxVias = 0;
+        const walkingThreshold = 360;
 
-        const data = await DeLijnApiGateway.fetchConnections(from, to, datetime, modes, results, lang);
+        const data = await DeLijnApiGateway.fetchConnections(from, to, datetime, modes, lang);
 
-        const connections = data.map(connection => this.extractConnectionData(connection));
+        const connections = data
+            .filter(item => {
+                let vehicleCount = 0;
+                let walkingTime = 0;
 
-        return connections;
+                item.sections.forEach(section => {
+                    if (section.travelType === 'transit') vehicleCount++;
+                    if (section.travelType === 'pedestrian') walkingTime += section.travelSummary.duration;
+                });
+
+                return !(vehicleCount - 1 > maxVias) && !(walkingTime > walkingThreshold);
+            })
+            .map(connection => this.extractConnectionData(connection));
+
+        return getResults(connections, results);
     }
 }
 

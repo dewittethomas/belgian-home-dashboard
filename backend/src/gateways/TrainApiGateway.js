@@ -4,7 +4,7 @@ import cacheManager from "../utils/cacheManager.js";
 cacheManager.init();
 
 const TrainApiGateway = {
-    async fetchConnectionsData(from, to, time, date, results, lang) {
+    async fetchConnectionsData(from, to, time, date, lang) {
         const cacheKey = `Train (connections): ${from} ${to}`;
         const cachedData = await cacheManager.getData(cacheKey);
 
@@ -14,7 +14,7 @@ const TrainApiGateway = {
             const params = {
                 'from': from,
                 'to': to,
-                'results': results,
+                'results': 5,
                 'time': time,
                 'date': date,
                 'format': 'json',

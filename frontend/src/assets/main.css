@@ -20,7 +20,7 @@ body {
     color: var(--blue) !important;
     margin: 2rem 0;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 1rem;
 }
 
@@ -50,6 +50,11 @@ body {
     margin: 0 0 1rem 0;
 }
 
+.card-title p {
+    display: flex;
+    flex-direction: column;
+}
+
 .nmbs {
     border-bottom: 3px solid var(--nmbs-blue);
 
@@ -59,16 +64,58 @@ body {
     border-bottom: 3px solid var(--de-lijn-yellow);
 }
 
-.card-title p img {
-    width: 1.5rem;
-    height: 1.5rem;
+.weather {
+    border-bottom: 3px solid var(--weather-green);
+}
+
+.waste-collection {
+    border-bottom: 3px solid var(--waste-collection-green);
 }
 
 .subject {
     font-weight: bold;
 }
 
-.departures li {
+.list li {
+    margin: 0 0 0.5rem 0;
+}
+
+.transport {
+    color: white;
+    padding: 0.05rem 0.3rem;
+    border-radius: 10%;
+}
+
+.weather-data {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+}
+
+.temperature {
+    font-size: 1.2rem;
+}
+
+.weather-specific span {
+    margin: 0.2rem 0.5rem;
+}
+
+@media screen and (max-width: 1120px) {
+    .card-container {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .card-container .card {
+        flex: 1 1 calc(50% - 1rem);
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .card-container {
+        grid-template-columns: 1fr;
+    }
+
+    .card-container .card {
+        flex: 1 1 100%;
+    }
 }

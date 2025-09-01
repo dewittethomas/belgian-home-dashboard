@@ -13,10 +13,10 @@ const TrainApiUseCase = {
         const datetime = dayjs().tz('Europe/Brussels');
         const time = datetime.format('HHmm');
         const date = datetime.format('DDMMYY');
-        const results = 2;
+        const results = 3;
         const lang = 'nl';
 
-        const data = await TrainApiGateway.fetchConnectionsData(from, to, time, date, results, lang);
+        const data = await TrainApiGateway.fetchConnectionsData(from, to, time, date, lang);
 
         const connections = data.map(connection => ({
             departure: dayjs.unix(connection.departure.time).utc().tz("Europe/Brussels").format('HH:mm'),

@@ -4,7 +4,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./src:/app/src
+      - api:/app/src
     networks:
       - backend
     depends_on:
@@ -26,6 +26,7 @@ services:
 
 volumes:
   redis:
+  api:
 
 networks:
   backend:
