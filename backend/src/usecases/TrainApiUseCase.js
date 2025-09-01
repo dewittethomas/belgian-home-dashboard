@@ -16,7 +16,8 @@ const TrainApiUseCase = {
         const results = 3;
         const lang = 'nl';
 
-        const data = await TrainApiGateway.fetchConnectionsData(from, to, time, date, lang);
+        const data = await TrainApiGateway.fetchConnectionsData(from, to, time, date, lang)
+            .filter(item => item.departure.platform !== '?');
 
         const connections = data.map(connection => ({
             departure: dayjs.unix(connection.departure.time).utc().tz("Europe/Brussels").format('HH:mm'),
