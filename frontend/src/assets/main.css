@@ -83,12 +83,6 @@ body {
     margin: 0 0 0.5rem 0;
 }
 
-.transport {
-    color: white;
-    padding: 0.05rem 0.3rem;
-    border-radius: 10%;
-}
-
 .weather-data {
     display: flex;
     flex-direction: column;
@@ -101,6 +95,27 @@ body {
 
 .weather-specific span {
     margin: 0.2rem 0.5rem;
+}
+
+.waste-collection li p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+}
+
+.waste-collection .li p span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.transport {
+    color: white;
+    padding: 0.05rem 0.3rem;
+    border-radius: 10%;
 }
 
 @media screen and (max-width: 1120px) {

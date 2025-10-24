@@ -11,10 +11,7 @@ const WeatherApiUseCase = {
             temperature: condition.temp_C,
             feelsLike: condition.FeelsLikeC,
             uvIndex: condition.uvIndex,
-            windSpeed: condition.windspeedKmph,
-            humidity: condition.humidity,
-            pressure: condition.pressure,
-            description: condition.weatherDesc[0].value
+            windSpeed: condition.windspeedKmph
         }
     }
 }

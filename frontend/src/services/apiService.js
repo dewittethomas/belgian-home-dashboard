@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://192.168.1.120:3000/api';
+const HOST_IP = import.meta.env.VITE_HOST_IP;
+const API_BASE_URL = `http://${HOST_IP}:3000/api`
 
 const apiService = {
     async getWeatherData(city) {

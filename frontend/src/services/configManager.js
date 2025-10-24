@@ -1,4 +1,3 @@
-// configManager.js
-import config from '../../config.json';
+import config from '../../config.json' assert { type: 'json' };
 
 export default config;

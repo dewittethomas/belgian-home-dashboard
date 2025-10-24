@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:8.2.0
+    image: redis:8.2.2
     volumes:
       - redis:/data
     networks:

@@ -62,10 +62,10 @@ const BusApiUseCase = {
                 let vehicleCount = 0;
                 let walkingTime = 0;
 
-                item.sections.forEach(section => {
+                for (var section of item.sections) {
                     if (section.travelType === 'transit') vehicleCount++;
                     if (section.travelType === 'pedestrian') walkingTime += section.travelSummary.duration;
-                });
+                };
 
                 return !(vehicleCount - 1 > maxVias) && !(walkingTime > walkingThreshold);
             })

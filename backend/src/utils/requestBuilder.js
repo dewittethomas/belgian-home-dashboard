@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { URL } from 'url';
+import { URL } from 'node:url';
 import { getRandom } from 'random-useragent';
 
 const BASE_HEADERS = {
@@ -17,6 +17,8 @@ const BASE_HEADERS = {
     'Sec-Fetch-Mode': 'cors',
     'Sec-Fetch-Site': 'same-origin'
 }
+
+const debug = process.env.debug;
 
 class RequestBuilder {
     constructor(url, method = 'GET') {
@@ -53,7 +55,7 @@ class RequestBuilder {
 
     async send() {
         const userAgent = getRandom(function (ua) {
-            return parseFloat(ua.browserVersion) >= 90;
+            return Number.parseFloat(ua.browserVersion) >= 90;
         });
 
         this.headers['User-Agent'] = userAgent;

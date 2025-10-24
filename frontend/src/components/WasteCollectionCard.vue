@@ -17,7 +17,7 @@
     <ul class="list" v-if="data">
       <li v-for="(collection, i) in data" :key="i">
         <p>
-          {{ collection.date }}: {{ collection.type }}
+          <span>{{ collection.date }}: {{ collection.type }}</span>
         </p>
       </li>
     </ul>

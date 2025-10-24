@@ -21,11 +21,11 @@ const DeLijnApiGateway = {
                             .send();
 
             const suggestions = response.data.suggestionsByQuery;
-            const stops = suggestions.filter((stop) => stop.resultType === 'place');
+            const stop = suggestions.find((stop) => stop.resultType === 'place');
 
-            cacheManager.setData(cacheKey, stops[0], 3600);
+            cacheManager.setData(cacheKey, stop, 3600);
             
-            return stops[0];
+            return stop;
         }
     },
 
@@ -56,13 +56,14 @@ const DeLijnApiGateway = {
                 'rentedEnable': [],
                 'taxiEnable': []
             }
-                const response = await RequestBuilder.post('https://www.delijn.be/api/here/routes/')
-                    .setData(body)
-                    .send();
 
-                cacheManager.setData(cacheKey, response.data.routes, 10);
+            const response = await RequestBuilder.post('https://www.delijn.be/api/here/routes/')
+                .setData(body)
+                .send();
 
-                return response.data.routes;
+            cacheManager.setData(cacheKey, response.data.routes, 10);
+
+            return response.data.routes;
         }
     }
 };
