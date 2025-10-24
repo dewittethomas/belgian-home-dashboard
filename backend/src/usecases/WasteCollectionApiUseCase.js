@@ -10,7 +10,7 @@ const WasteCollectionApiUseCase = {
         const zipCodeId = await WasteCollectionApiGateway.fetchZipCodeId(zipCode);
         const streetId = await WasteCollectionApiGateway.fetchStreetId(street, zipCodeId);
 
-        const fromDate = '2025-10-18';
+        const fromDate = dayjs().format('YYYY-MM-DD');
         const untilDate = dayjs().add(7, 'day').format('YYYY-MM-DD');
 
         const data = await WasteCollectionApiGateway.fetchCollectionData(zipCodeId, streetId, houseNumber, fromDate, untilDate);
