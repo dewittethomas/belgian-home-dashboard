@@ -56,13 +56,14 @@ const BusApiUseCase = {
         const walkingThreshold = 360;
 
         const data = await DeLijnApiGateway.fetchConnections(from, to, datetime, modes, lang);
+        console.log(data)
 
         const connections = data
             .filter(item => {
                 let vehicleCount = 0;
                 let walkingTime = 0;
 
-                for (var section of item.sections) {
+                for (const section of item.sections) {
                     if (section.travelType === 'transit') vehicleCount++;
                     if (section.travelType === 'pedestrian') walkingTime += section.travelSummary.duration;
                 };
