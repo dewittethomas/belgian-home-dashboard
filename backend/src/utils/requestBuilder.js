@@ -1,21 +1,13 @@
 import axios from 'axios';
 import { URL } from 'node:url';
 import { getRandom } from 'random-useragent';
+import { httpAgent, httpsAgent } from './agentBuilder.js';
 
 const BASE_HEADERS = {
     'Accept': 'application/json, text/plain, */*',
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'en-US,en;q=0.9',
-    'Connection': 'close',
-    'DNT': '1',
-    'Upgrade-Insecure-Requests': '1',
-    'Sec-Ch-Ua-Mobile': '?0',
-    'TE': 'trailers',
-    'Priority': 'u=0, i',
-    'Cache-Control': 'no-cache',
-    'Sec-Fetch-Dest': 'empty',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Site': 'same-origin'
+    'DNT': '1'
 }
 
 const debug = process.env.debug;
@@ -65,7 +57,9 @@ class RequestBuilder {
             url: this.url,
             headers: this.headers,
             timeout: this.timeout,
-            params: this.params
+            params: this.params,
+            httpAgent: httpAgent,
+            httpsAgent: httpsAgent
         }
 
         if (this.method === 'POST' && this.data) {
