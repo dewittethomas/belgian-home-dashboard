@@ -5,8 +5,7 @@ const DeLijnApiUseCase = {
         const data = await DeLijnApiGateway.fetchStop(query);
 
         return {
-            id: data.id,
-            title: data.title,
+            name: data.title,
             position: {
                 lt: data.position.lt,
                 ln: data.position.ln

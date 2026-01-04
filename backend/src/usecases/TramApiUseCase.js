@@ -4,18 +4,6 @@ import getResults from "../utils/resultHandler.js";
 import dayjs from "dayjs";
 
 const TramApiUseCase = {
-    async getStop(query) {
-        const data = await DeLijnApiGateway.fetchStop(query);
-
-        return {
-            name: data.title,
-            position: {
-                lt: data.position.lt,
-                ln: data.position.ln
-            }
-        };
-    },
-
     extractConnectionData(connection) {
         const sections = connection.sections;
         const transits = sections.filter(section => section.travelType === 'transit');

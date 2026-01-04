@@ -7,6 +7,7 @@ const WeatherApiGateway = {
     async getWeatherData(city) {
         const cacheKey = `Weather: ${city}`;
         const cachedData = await cacheManager.getData(cacheKey);
+        const CACHE_TTL = 3600;
 
         if (cachedData) {
             return cachedData;
@@ -19,7 +20,7 @@ const WeatherApiGateway = {
                 .setParams(params)
                 .send();
 
-            cacheManager.setData(cacheKey, response.data, 1800);
+            cacheManager.setData(cacheKey, response.data, CACHE_TTL);
 
             return response.data;
         }

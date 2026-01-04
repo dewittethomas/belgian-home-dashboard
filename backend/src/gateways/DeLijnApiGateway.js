@@ -7,6 +7,7 @@ const DeLijnApiGateway = {
     async fetchStop(query, lang) {
         const cacheKey = `De Lijn (stop): ${query}`;
         const cachedData = await cacheManager.getData(cacheKey);
+        const CACHE_TTL = 10;
 
         if (cachedData) {
             return cachedData;
@@ -44,7 +45,7 @@ const DeLijnApiGateway = {
                     'lt': to.position.lt,
                     'ln': to.position.ln
                 },
-                'destinationName': to.title,
+                'destinationName': to.name,
                 'lang': lang,
                 'modes': modes,
                 'origin': {
@@ -52,7 +53,7 @@ const DeLijnApiGateway = {
                     'lt': from.position.lt, 
                     'ln': from.position.ln
                 },
-                'originName': from.title,
+                'originName': from.name,
                 'rentedEnable': [],
                 'taxiEnable': []
             }
@@ -61,7 +62,7 @@ const DeLijnApiGateway = {
                 .setData(body)
                 .send();
 
-            cacheManager.setData(cacheKey, response.data.routes, 10);
+            cacheManager.setData(cacheKey, response.data.routes, CACHE_TTL);
 
             return response.data.routes;
         }

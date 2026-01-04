@@ -7,6 +7,7 @@ const TrainApiGateway = {
     async fetchConnectionsData(from, to, time, date, lang) {
         const cacheKey = `Train (connections): ${from} ${to}`;
         const cachedData = await cacheManager.getData(cacheKey);
+        const CACHE_TTL = 10;
 
         if (cachedData) {
             return cachedData;
@@ -26,7 +27,7 @@ const TrainApiGateway = {
                             .setParams(params)
                             .send();
 
-            cacheManager.setData(cacheKey, response.data.connection, 10);
+            cacheManager.setData(cacheKey, response.data.connection, CACHE_TTL);
 
             return response.data.connection;
         }
