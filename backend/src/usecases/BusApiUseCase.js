@@ -24,42 +24,67 @@ const BusApiUseCase = {
         return {
             departure: dayjs.unix((departure.time / 1000) - delay).tz("Europe/Brussels").format('HH:mm'),
             arrival: dayjs.unix((arrival.time / 1000)).tz("Europe/Brussels").format('HH:mm'),
-            delay: Math.floor(delay / 60).toString(),
+            delay: Math.floor(delay / 60),
             transport: {
                 shortName: transits[0].transport.shortName,
                 headsign: transits[0].transport.headsign,
                 color: transits[0].transport.color || '#000000'
             },
             transfers: transits.length - 1,
-            walking: Math.floor(walking / 60).toString()
+            walking: Math.floor(walking / 60)
         }
     },
 
+    getLastDepartureTime(data) {
+        const last = data[data.length - 1];
+        if (!last) return null;
+        
+        const firstTransit = last.sections.find(
+            section => section.travelType === "transit"
+        );
+
+        return firstTransit?.departure?.time ?? null;
+    },
+
     async getConnections(from, to) {
-        const datetime = dayjs().toISOString();
         const modes = ['bus'];
-        const results = 3;
-        const lang = 'nl';
         const maxVias = 0;
         const walkingThreshold = 360;
+        const resultsLimit = 3;
+        const lang = 'nl';
+        const MAX_ATTEMPTS = 2;
 
-        const data = await DeLijnApiGateway.fetchConnections(from, to, datetime, modes, lang);
+        let collected = [];
+        let departureTime = dayjs().toISOString();
+        let attempts = 0;
 
-        const connections = data
-            .filter(item => {
-                let vehicleCount = 0;
-                let walkingTime = 0;
+        while (collected.length < resultsLimit && attempts < MAX_ATTEMPTS) {
+            const data = await DeLijnApiGateway.fetchConnections(from, to, departureTime, modes, lang);
 
-                for (const section of item.sections) {
-                    if (section.travelType === 'transit') vehicleCount++;
-                    if (section.travelType === 'pedestrian') walkingTime += section.travelSummary.duration;
-                };
+            const filtered = data
+                .filter(item => {
+                    let vehicleCount = 0;
+                    let walkingTime = 0;
 
-                return !(vehicleCount - 1 > maxVias) && !(walkingTime > walkingThreshold);
-            })
-            .map(connection => this.extractConnectionData(connection));
+                    for (const section of item.sections) {
+                        if (section.travelType === 'transit') vehicleCount++;
+                        if (section.travelType === 'pedestrian') walkingTime += section.travelSummary.duration;
+                    };
 
-        return getResults(connections, results);
+                    return (vehicleCount - 1 <= maxVias && walkingTime <= walkingThreshold);
+                })
+                .map(connection => this.extractConnectionData(connection));
+
+            collected.push(...filtered);
+
+            const lastDeparture = this.getLastDepartureTime(data);
+            if (!lastDeparture) break;
+
+            departureTime = dayjs(lastDeparture).toISOString();
+            attempts++;
+        }
+
+        return collected.slice(0, resultsLimit);
     }
 }
 

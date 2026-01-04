@@ -7,7 +7,7 @@ const DeLijnApiGateway = {
     async fetchStop(query, lang) {
         const cacheKey = `De Lijn (stop): ${query}`;
         const cachedData = await cacheManager.getData(cacheKey);
-        const CACHE_TTL = 10;
+        const CACHE_TTL = 3600;
 
         if (cachedData) {
             return cachedData;
@@ -24,22 +24,23 @@ const DeLijnApiGateway = {
             const suggestions = response.data.suggestionsByQuery;
             const stop = suggestions.find((stop) => stop.resultType === 'place');
 
-            cacheManager.setData(cacheKey, stop, 3600);
+            cacheManager.setData(cacheKey, stop, CACHE_TTL);
             
             return stop;
         }
     },
 
-    async fetchConnections(from, to, datetime, modes, lang) {
-        const cacheKey = `De Lijn (connection): from(${from.position.lt} ${from.position.ln}) to(${to.position.lt} ${to.position.ln}) ${modes}`;
+    async fetchConnections(from, to, departureTime, modes, lang) {
+        const cacheKey = `De Lijn (connection): from(${from.position.lt} ${from.position.ln}) to(${to.position.lt} ${to.position.ln}) departureTime(${departureTime}) ${modes}`;
         const cachedData = await cacheManager.getData(cacheKey);
+        const CACHE_TTL = 10;
 
         if (cachedData) {
             return cachedData;
         } else {
             const body = {
                 'alternatives': 5,
-                'departureTime': datetime,
+                'departureTime': departureTime,
                 'destination': {
                     'type': 'Coordinate',
                     'lt': to.position.lt,
