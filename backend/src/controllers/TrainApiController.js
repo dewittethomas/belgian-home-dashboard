@@ -3,14 +3,13 @@ import TrainApiUseCase from "../usecases/TrainApiUseCase.js";
 const TrainApiController = {
     async handle(req, res) {
         try {
-            const from = req.query.from;
-            const to = req.query.to;
+            const routes = req.body.routes;
 
-            if (!from || !to) {
-                return res.status(400).json({ error: "Missing one or more required query parameters: from, to" });
+            if (!routes) {
+                return res.status(400).json({ error: "Missing body: routes" });
             }
 
-            const data = await TrainApiUseCase.getConnections(from, to);
+            const data = await TrainApiUseCase.getConnections(routes);
             res.status(200).json(data);
         } catch (err) {
             console.error(err);

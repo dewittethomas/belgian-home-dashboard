@@ -3,6 +3,6 @@ import TrainApiController from '../controllers/TrainApiController.js';
 
 const router = express.Router();
 
-router.get('/', TrainApiController.handle);
+router.post('/', TrainApiController.handle);
 
 export default router;

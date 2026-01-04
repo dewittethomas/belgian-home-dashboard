@@ -1,18 +1,25 @@
 import WeatherApiGateway from "../gateways/WeatherApiGateway.js";
 
 const WeatherApiUseCase = {
-    async getWeatherData(city) {
-        const data = await WeatherApiGateway.getWeatherData(city);
+    async getWeatherData(cities) {
+        const promises = cities.map(async city => {
+            const data = await WeatherApiGateway.getWeatherData(city);
 
-        const condition = data.current_condition[0];
+            const condition = data.current_condition[0];
 
-        return {
-            city: data.nearest_area[0].areaName[0].value,
-            temperature: condition.temp_C,
-            feelsLike: condition.FeelsLikeC,
-            uvIndex: condition.uvIndex,
-            windSpeed: condition.windspeedKmph
-        }
+            return {
+                [city]: {
+                    temperature: Number(condition.temp_C),
+                    feelsLike: Number(condition.FeelsLikeC),
+                    uvIndex: Number(condition.uvIndex),
+                    windSpeed: Number(condition.windspeedKmph)
+                }
+            }
+        });
+
+        const results = await Promise.all(promises);
+
+        return Object.assign({}, ...results);
     }
 }
 
