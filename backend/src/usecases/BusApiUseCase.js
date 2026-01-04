@@ -56,7 +56,6 @@ const BusApiUseCase = {
         const walkingThreshold = 360;
 
         const data = await DeLijnApiGateway.fetchConnections(from, to, datetime, modes, lang);
-        console.log(data)
 
         const connections = data
             .filter(item => {
