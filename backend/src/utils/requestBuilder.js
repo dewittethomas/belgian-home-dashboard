@@ -10,8 +10,6 @@ const BASE_HEADERS = {
     'DNT': '1'
 }
 
-const debug = process.env.debug;
-
 class RequestBuilder {
     constructor(url, method = 'GET') {
         this.url = new URL(url);
