@@ -74,7 +74,9 @@ const BusApiUseCase = {
         const MAX_ATTEMPTS = 2;
 
         const promises = routes.map(async ({from, to, key}) => {
-            let collected = [];
+            const seen = new Set();
+            const collected = [];
+            
             let departureTime = dayjs().toISOString();
             let attempts = 0;
 
@@ -93,7 +95,13 @@ const BusApiUseCase = {
 
                         return (vehicleCount - 1 <= maxVias && walkingTime <= walkingThreshold);
                     })
-                    .map(connection => this.extractConnectionData(connection));
+                    .map(connection => this.extractConnectionData(connection))
+                    .filter(trip => {
+                        const id = `${trip.departure}-${trip.arrival}-${trip.transport.shortName}`;
+                        if (seen.has(id)) return false;
+                        seen.add(id);
+                        return true;
+                    });
 
                 collected.push(...filtered);
 
