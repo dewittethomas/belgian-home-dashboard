@@ -1,11 +1,10 @@
 import WasteCollectionApiGateway from "../gateways/WasteCollectionApiGateway.js";
-import getResults from "../utils/resultHandler.js";
 
 import dayjs from "dayjs";
 
 const WasteCollectionApiUseCase = {
     async getNextWasteCollections(zipCode, street, houseNumber) {
-        const results = 3;
+        const resultsLimit = 3;
 
         const zipCodeId = await WasteCollectionApiGateway.fetchZipCodeId(zipCode);
         const streetId = await WasteCollectionApiGateway.fetchStreetId(street, zipCodeId);
@@ -30,12 +29,14 @@ const WasteCollectionApiUseCase = {
                 return acc;
             }, {});
 
-        const groupedCollections = Object.keys(collections).map(key => ({
-            date: key,
-            type: collections[key].types.sort((a,b) => a.length - b.length).join(', ')
-        }));
+        const groupedCollections = Object.keys(collections)
+            .map(key => ({
+                date: key,
+                type: collections[key].types.sort((a,b) => a.length - b.length).join(', ')
+            }))
+            .splice(0, resultsLimit);
 
-        return getResults(groupedCollections, results);
+        return groupedCollections;
     }
 }
 

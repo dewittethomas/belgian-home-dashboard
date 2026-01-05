@@ -1,5 +1,5 @@
 import DeLijnApiGateway from "../gateways/DeLijnApiGateway.js";
-import getResults from "../utils/resultHandler.js";
+import DeLijnApiUseCase from "./DeLijnApiUseCase.js";
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
@@ -46,7 +46,26 @@ const BusApiUseCase = {
         return firstTransit?.departure?.time ?? null;
     },
 
-    async getConnections(from, to) {
+    async getConnectionsByStopNames(routes) {
+        const promises = routes.map(async ({from, to}) => {
+            const [ fromStop, toStop ] = await Promise.all([
+                DeLijnApiUseCase.getStop(from),
+                DeLijnApiUseCase.getStop(to)
+            ]);
+
+            return {
+                from: fromStop,
+                to: toStop,
+                key: `${fromStop.name}->${toStop.name}`
+            };
+        });
+
+        const results = await Promise.all(promises);
+
+        return this.getConnections(results)
+    },
+
+    async getConnections(routes) {
         const modes = ['bus'];
         const maxVias = 0;
         const walkingThreshold = 360;
@@ -54,37 +73,45 @@ const BusApiUseCase = {
         const lang = 'nl';
         const MAX_ATTEMPTS = 2;
 
-        let collected = [];
-        let departureTime = dayjs().toISOString();
-        let attempts = 0;
+        const promises = routes.map(async ({from, to, key}) => {
+            let collected = [];
+            let departureTime = dayjs().toISOString();
+            let attempts = 0;
 
-        while (collected.length < resultsLimit && attempts < MAX_ATTEMPTS) {
-            const data = await DeLijnApiGateway.fetchConnections(from, to, departureTime, modes, lang);
+            while (collected.length < resultsLimit && attempts < MAX_ATTEMPTS) {
+                const data = await DeLijnApiGateway.fetchConnections(from, to, departureTime, modes, lang);
 
-            const filtered = data
-                .filter(item => {
-                    let vehicleCount = 0;
-                    let walkingTime = 0;
+                const filtered = data
+                    .filter(item => {
+                        let vehicleCount = 0;
+                        let walkingTime = 0;
 
-                    for (const section of item.sections) {
-                        if (section.travelType === 'transit') vehicleCount++;
-                        if (section.travelType === 'pedestrian') walkingTime += section.travelSummary.duration;
-                    };
+                        for (const section of item.sections) {
+                            if (section.travelType === 'transit') vehicleCount++;
+                            if (section.travelType === 'pedestrian') walkingTime += section.travelSummary.duration;
+                        };
 
-                    return (vehicleCount - 1 <= maxVias && walkingTime <= walkingThreshold);
-                })
-                .map(connection => this.extractConnectionData(connection));
+                        return (vehicleCount - 1 <= maxVias && walkingTime <= walkingThreshold);
+                    })
+                    .map(connection => this.extractConnectionData(connection));
 
-            collected.push(...filtered);
+                collected.push(...filtered);
 
-            const lastDeparture = this.getLastDepartureTime(data);
-            if (!lastDeparture) break;
+                const lastDeparture = this.getLastDepartureTime(data);
+                if (!lastDeparture) break;
 
-            departureTime = dayjs(lastDeparture).toISOString();
-            attempts++;
-        }
+                departureTime = dayjs(lastDeparture).toISOString();
+                attempts++;
+            }
 
-        return collected.slice(0, resultsLimit);
+            return {
+                [key]: collected.slice(0, resultsLimit)
+            };
+        });
+
+        const results = await Promise.all(promises);
+
+        return Object.assign({}, ...results);
     }
 }
 

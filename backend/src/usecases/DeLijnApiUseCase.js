@@ -11,7 +11,7 @@ const DeLijnApiUseCase = {
                 ln: data.position.ln
             }
         };
-    },
+    }
 }
 
 export default DeLijnApiUseCase;

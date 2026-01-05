@@ -1,7 +1,12 @@
 import DeLijnApiGateway from "../gateways/DeLijnApiGateway.js";
-import getResults from "../utils/resultHandler.js";
+import DeLijnApiUseCase from "./DeLijnApiUseCase.js";
 
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc.js";
+import timezone from "dayjs/plugin/timezone.js";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const TramApiUseCase = {
     extractConnectionData(connection) {
@@ -15,28 +20,57 @@ const TramApiUseCase = {
         return {
             departure: dayjs.unix((departure.time  / 1000) - delay).tz("Europe/Brussels").format('HH:mm'),
             arrival: dayjs.unix((arrival.time / 1000)).tz("Europe/Brussels").format('HH:mm'),
-            delay: Math.floor(delay / 60).toString(),
+            delay: Math.floor(delay / 60),
             transport: {
                 shortName: transits[0].transport.shortName,
                 headsign: transits[0].transport.headsign,
                 color: transits[0].transport.color || '#000000'
             },
             transfers: transits.length - 1,
-            walking: '0'
+            walking: 0
         }
     },
 
-    async getConnections(from, to) {
-        const datetime = dayjs().toISOString();
+    async getConnectionsByStopNames(routes) {
+        const promises = routes.map(async ({from, to}) => {
+            const [ fromStop, toStop ] = await Promise.all([
+                DeLijnApiUseCase.getStop(from),
+                DeLijnApiUseCase.getStop(to)
+            ]);
+
+            return {
+                from: fromStop,
+                to: toStop,
+                key: `${fromStop.name}->${toStop.name}`
+            };
+        });
+
+        const results = await Promise.all(promises);
+
+        return this.getConnections(results)
+    },
+
+    async getConnections(routes) {
+        const departureTime = dayjs().toISOString();
         const modes = ['lightRail'];
-        const results = 3;
+        const resultsLimit = 3;
         const lang = 'nl';
 
-        const data = await DeLijnApiGateway.fetchConnections(from, to, datetime, modes, lang);
+        const promises = routes.map(async ({from, to, key}) => {
+            const data = await DeLijnApiGateway.fetchConnections(from, to, departureTime, modes, lang);
 
-        const connections = data.map(connection => this.extractConnectionData(connection));
+            const connections = data
+                .map(connection => this.extractConnectionData(connection))
+                .slice(0, resultsLimit);
 
-        return getResults(connections, results);
+            return {
+                [key]: connections
+            };
+        });
+
+        const results = await Promise.all(promises);
+
+        return Object.assign({}, ...results);
     }
 }
 

@@ -3,6 +3,6 @@ import TramApiController from '../controllers/TramApiController.js';
 
 const router = express.Router();
 
-router.get('/', TramApiController.handle);
+router.post('/', TramApiController.handle);
 
 export default router;

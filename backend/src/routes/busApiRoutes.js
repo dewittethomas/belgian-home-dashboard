@@ -3,6 +3,6 @@ import BusApiController from '../controllers/BusApiController.js';
 
 const router = express.Router();
 
-router.get('/', BusApiController.handle);
+router.post('/', BusApiController.handle);
 
 export default router;

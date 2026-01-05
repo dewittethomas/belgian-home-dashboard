@@ -7,7 +7,6 @@ const DeLijnApiGateway = {
     async fetchStop(query, lang) {
         const cacheKey = `De Lijn (stop): ${query}`;
         const cachedData = await cacheManager.getData(cacheKey);
-        const CACHE_TTL = 3600;
 
         if (cachedData) {
             return cachedData;
@@ -24,7 +23,7 @@ const DeLijnApiGateway = {
             const suggestions = response.data.suggestionsByQuery;
             const stop = suggestions.find((stop) => stop.resultType === 'place');
 
-            cacheManager.setData(cacheKey, stop, CACHE_TTL);
+            cacheManager.setData(cacheKey, stop);
             
             return stop;
         }

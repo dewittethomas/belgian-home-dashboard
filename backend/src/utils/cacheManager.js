@@ -19,12 +19,15 @@ async function getData(key) {
     }
 }
 
-async function setData(key, value, ttl=0) {
+async function setData(key, value, ttl=null) {
     try {
-        await client.set(key, JSON.stringify(value), {
-            EX: ttl
-        });
-
+        if (ttl && ttl > 0) {
+            await client.set(key, JSON.stringify(value), {
+                EX: ttl
+            });
+        } else {
+            await client.set(key, JSON.stringify(value));
+        }
     } catch (error) {
         console.error(`Error setting data in cache: ${error}`);
     }
