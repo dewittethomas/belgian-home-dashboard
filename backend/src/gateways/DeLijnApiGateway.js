@@ -32,7 +32,7 @@ const DeLijnApiGateway = {
     async fetchConnections(from, to, departureTime, modes, lang) {
         const cacheKey = `De Lijn (connection): from(${from.position.lt} ${from.position.ln}) to(${to.position.lt} ${to.position.ln}) departureTime(${departureTime}) ${modes}`;
         const cachedData = await cacheManager.getData(cacheKey);
-        const CACHE_TTL = 10;
+        const CACHE_TTL = 20;
 
         if (cachedData) {
             return cachedData;

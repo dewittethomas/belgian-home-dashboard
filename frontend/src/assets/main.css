@@ -98,18 +98,19 @@ body {
 }
 
 .waste-collection li p {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
 }
 
-.waste-collection .li p span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-  min-width: 0;
+.waste-collection li p span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
 }
 
 .transport {

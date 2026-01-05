@@ -1,3 +1,13 @@
+<script setup>
+const props = defineProps({
+  from: String,
+  to: String,
+  data: Array,
+  loading: Boolean,
+  error: String
+});
+</script>
+
 <template>
   <div class="card">
     <div class="card-title nmbs">
@@ -28,31 +38,3 @@
     </ul>
   </div>
 </template>
-
-<script setup>
-import { ref, onMounted } from "vue";
-import apiService from "@/services/apiService";
-
-const props = defineProps({
-  from: { type: String, required: true },
-  to: { type: String, required: true }
-});
-
-const data = ref([]);
-const loading = ref(true);
-const error = ref(null);
-
-const fetchTrainConnections = async () => {
-  try {
-    const response = await apiService.getTrainConnections(props.from, props.to);
-    data.value = response;
-  } catch (err) {
-    error.value = "Failed to fetch train connections";
-    console.error(err);
-  } finally {
-    loading.value = false;
-  }
-};
-
-onMounted(fetchTrainConnections);
-</script>

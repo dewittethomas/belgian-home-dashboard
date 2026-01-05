@@ -41,7 +41,7 @@ const TramApiUseCase = {
             return {
                 from: fromStop,
                 to: toStop,
-                key: `${fromStop.name}->${toStop.name}`
+                key: `${from}->${to}`
             };
         });
 

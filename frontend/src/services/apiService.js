@@ -4,10 +4,10 @@ const HOST_IP = import.meta.env.VITE_HOST_IP;
 const API_BASE_URL = `http://${HOST_IP}:3000/api`
 
 const apiService = {
-    async getWeatherData(city) {
-        const res = await axios.get(`${API_BASE_URL}/weather`, {
-            params: { city }
-        })
+    async getWeatherData(cities) {
+        const res = await axios.post(`${API_BASE_URL}/weather`, {
+            cities
+        });
         return res.data;
     },
     async getWasteCollections(zipCode, street, houseNumber) {
@@ -17,34 +17,26 @@ const apiService = {
                 street,
                 houseNumber
             }
-        })
+        });
         return res.data;
     },
-    async getTrainConnections(from, to) {
-        const res = await axios.get(`${API_BASE_URL}/train`, {
-            params: {
-                from,
-                to
-            }
-        })
+    async getTrainConnections(routes) {
+        const res = await axios.post(`${API_BASE_URL}/train`, {
+            routes
+        });
         return res.data;
     },
-    async getBusConnections(from, to) {
-        const res = await axios.get(`${API_BASE_URL}/bus`, {
-            params: {
-                from,
-                to
-            }
-        })
+    async getBusConnections(routes) {
+        const res = await axios.post(`${API_BASE_URL}/bus`, {
+            routes
+        });
         return res.data;
     },
-    async getTramConnections(from, to) {
-        const res = await axios.get(`${API_BASE_URL}/tram`, {
-            params: {
-                from,
-                to
-            }
-        })
+    async getTramConnections(routes) {
+        const res = await axios.post(`${API_BASE_URL}/tram`, {
+            routes
+        });
+        console.log(res.data)
         return res.data;
     }
 }
