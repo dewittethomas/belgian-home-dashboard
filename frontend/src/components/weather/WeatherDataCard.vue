@@ -37,11 +37,11 @@ defineProps({
 
     <!-- Data -->
     <div v-if="data" class="weather-data">
-    <p class="temperature">{{ data.temperature }}°C</p>
-    <p>Voelt als {{ data.feelsLike }}°C</p>
+    <p class="temperature">{{ Math.round(data.temperature) }}°C</p>
+    <p>Voelt als {{ Math.round(data.feelsLike) }}°C</p>
     <p class="weather-specific">
-        <span>🌬️ {{ data.windSpeed }} km/h</span>
-        <span>☀️ UV {{ data.uvIndex }}</span>
+        <span>🌬️ {{ Math.round(data.windSpeed) }} km/h</span>
+        <span>☀️ UV {{ Math.round(data.uvIndex) }}</span>
     </p>
     </div>
 </div>

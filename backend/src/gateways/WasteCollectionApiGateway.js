@@ -9,7 +9,6 @@ const WasteCollectionApiGateway = {
     async fetchZipCodeId(zipCode) {
         const cacheKey = `Waste collection (zipCode): ${zipCode}`;
         const cachedData = await cacheManager.getData(cacheKey);
-        const CACHE_TTL = 3600;
 
         if (cachedData) {
             return cachedData
@@ -23,7 +22,7 @@ const WasteCollectionApiGateway = {
                             .setHeaders(headers)
                             .send();
 
-            cacheManager.setData(cacheKey, response.data.items[0].id, CACHE_TTL);
+            cacheManager.setData(cacheKey, response.data.items[0].id);
 
             return response.data.items[0].id;
         }
@@ -32,7 +31,6 @@ const WasteCollectionApiGateway = {
     async fetchStreetId(street, zipCodeId) {
         const cacheKey = `Waste collection (street): ${street}`;
         const cachedData = await cacheManager.getData(cacheKey);
-        const CACHE_TTL = 3600;
     
         if (cachedData) {
             return cachedData;
@@ -47,11 +45,10 @@ const WasteCollectionApiGateway = {
                             .setHeaders(headers)
                             .send();
 
-            cacheManager.setData(cacheKey, response.data.items[0].id, CACHE_TTL);
+            cacheManager.setData(cacheKey, response.data.items[0].id);
             
             return response.data.items[0].id;
         }
-
     },
 
     async fetchCollectionData(zipCodeId, streetId, houseNumber, fromDate, untilDate) {
