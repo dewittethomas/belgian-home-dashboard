@@ -23,7 +23,7 @@ body {
     color: var(--blue) !important;
     margin: 2rem 0;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
 }
 
@@ -31,10 +31,12 @@ body {
     color: var(--dark-blue);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border-radius: 0.5rem;
-    padding: 1rem;
+    padding: 0.8rem 1rem;
     display: flex;
     flex-direction: column;
-    flex: 1 1 calc(25% - 1rem);
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .card ul {
@@ -79,7 +81,7 @@ body {
 }
 
 .list li {
-    margin: 0 0 0.5rem 0;
+    margin: 0.25rem 0;
 }
 
 .weather-data {
@@ -93,7 +95,15 @@ body {
 }
 
 .weather-specific span {
-    margin: 0.2rem 0.5rem;
+    margin: 0.25rem 0.5rem;
+}
+
+.waste-collection .list li p span {
+    flex: 1 1 0;            
+    min-width: 0;           
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .transport-identification {
@@ -104,20 +114,20 @@ body {
 
 @media screen and (max-width: 1120px) {
     .card-container {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .card-container .card {
-        flex: 1 1 calc(50% - 1rem);
+        flex: 1 1 auto;
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 655px) {
     .card-container {
         grid-template-columns: 1fr;
     }
 
     .card-container .card {
-        flex: 1 1 100%;
+        flex: 1 1 auto;
     }
 }
