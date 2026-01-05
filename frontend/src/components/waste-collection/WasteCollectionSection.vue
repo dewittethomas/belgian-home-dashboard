@@ -11,10 +11,10 @@ const error = ref(null);
 onMounted(async () => {
     try {
         data.value = await apiService.getWasteCollections(
-        config.wasteCollection.zipCode,
-        config.wasteCollection.street,
-        config.wasteCollection.houseNumber
-    );
+            config.wasteCollection.zipCode,
+            config.wasteCollection.street,
+            config.wasteCollection.houseNumber
+        );
     } catch (e) {
         console.error(e);
         error.value = "Failed to fetch waste collections";
@@ -25,10 +25,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <WasteCollectionCard
-    :street="config.wasteCollection.street"
-    :data="data"
-    :loading="loading"
-    :error="error"
-  />
+    <WasteCollectionCard
+        :street="config.wasteCollection.street"
+        :data="data"
+        :loading="loading"
+        :error="error"
+    />
 </template>

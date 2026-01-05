@@ -58,19 +58,19 @@ body {
     flex-direction: column;
 }
 
-.nmbs {
+.nmbs .card-title {
     border-bottom: 3px solid var(--nmbs-blue);
 }
 
-.de-lijn {
+.de-lijn .card-title {
     border-bottom: 3px solid var(--de-lijn-yellow);
 }
 
-.weather {
+.weather .card-title {
     border-bottom: 3px solid var(--weather-green);
 }
 
-.waste-collection {
+.waste-collection .card-title {
     border-bottom: 3px solid var(--waste-collection-green);
 }
 
@@ -96,7 +96,7 @@ body {
     margin: 0.2rem 0.5rem;
 }
 
-.transport {
+.transport-identification {
     color: white;
     padding: 0.05rem 0.3rem;
     border-radius: 10%;

@@ -8,12 +8,12 @@ defineProps({
 </script>
 
 <template>
-  <div class="card">
-    <div class="card-title waste-collection">
-      <p>
-        <span>Afvalophaling in</span>
-        <span class="subject">{{ street }}</span>
-      </p>
+  <div class="card waste-collection">
+    <div class="card-title">
+        <p>
+            <span>Afvalophaling in</span>
+            <span class="subject">{{ street }}</span>
+        </p>
     </div>
 
     <!-- Loading state -->

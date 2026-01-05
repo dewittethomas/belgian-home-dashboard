@@ -9,25 +9,25 @@ const loading = ref(true);
 const error = ref(null);
 
 onMounted(async () => {
-  try {
-    data.value = await apiService.getTrainConnections(config.train.routes);
-  } catch (err) {
-    console.error(err);
-    error.value = "Failed to fetch train connections";
-  } finally {
-    loading.value = false;
-  }
+    try {
+        data.value = await apiService.getTrainConnections(config.train.routes);
+    } catch (e) {
+        console.error(e);
+        error.value = "Failed to fetch train connections";
+    } finally {
+        loading.value = false;
+    }
 });
 </script>
 
 <template>
-  <TrainConnectionCard
-    v-for="route in config.train.routes"
-    :key="`${route.from}-${route.to}`"
-    :from="route.from"
-    :to="route.to"
-    :data="data[`${route.from}->${route.to}`]"
-    :loading="loading"
-    :error="error"
-  />
+    <TrainConnectionCard
+        v-for="route in config.train.routes"
+        :key="`${route.from}-${route.to}`"
+        :from="route.from"
+        :to="route.to"
+        :data="data[`${route.from}->${route.to}`]"
+        :loading="loading"
+        :error="error"
+    />
 </template>

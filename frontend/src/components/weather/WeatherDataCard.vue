@@ -21,12 +21,12 @@ defineProps({
 
 
 <template>
-<div class="card">
-    <div class="card-title weather">
-    <p>
-        <span>Weer in</span>
-        <span class="subject">{{ city }}</span>
-    </p>
+<div class="card weather">
+    <div class="card-title">
+        <p>
+            <span>Weer in</span>
+            <span class="subject">{{ city }}</span>
+        </p>
     </div>
 
     <!-- Loading state -->

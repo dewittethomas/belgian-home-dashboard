@@ -9,12 +9,12 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="card">
-    <div class="card-title nmbs">
-      <p>
-        <span>Trein naar</span>
-        <span class="subject">{{ to }}</span>
-      </p>
+  <div class="card nmbs">
+    <div class="card-title">
+        <p>
+            <span>Trein naar</span>
+            <span class="subject">{{ to }}</span>
+        </p>
     </div>
 
     <!-- Loading state -->
@@ -29,7 +29,7 @@ const props = defineProps({
         <p>
           {{ trip.departure }} - {{ trip.arrival }}
           <span 
-            class="transport"
+            class="transport-identification"
             :style="{ backgroundColor: '#666666' }">
             {{ trip.platform }}
           </span>

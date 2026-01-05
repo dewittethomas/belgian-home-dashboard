@@ -21,13 +21,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <TramConnectionCard
-    v-for="route in config.tram.routes"
-    :key="`${route.from}-${route.to}`"
-    :from="route.from"
-    :to="route.to"
-    :data="data[`${route.from}->${route.to}`]"
-    :loading="loading"
-    :error="error"
-  />
+    <TramConnectionCard
+        v-for="route in config.tram.routes"
+        :key="`${route.from}-${route.to}`"
+        :from="route.from"
+        :to="route.to"
+        :data="data[`${route.from}->${route.to}`]"
+        :loading="loading"
+        :error="error"
+    />
 </template>
