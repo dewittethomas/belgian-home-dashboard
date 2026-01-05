@@ -15,7 +15,7 @@ class RequestBuilder {
         this.url = new URL(url);
         this.method = method.toUpperCase();
         this.headers = { ...BASE_HEADERS };
-        this.timeout = 100000;
+        this.timeout = 10000;
         this.params = {};
         this.data = null;
     }

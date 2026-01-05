@@ -60,7 +60,6 @@ body {
 
 .nmbs {
     border-bottom: 3px solid var(--nmbs-blue);
-
 }
 
 .de-lijn {
@@ -95,22 +94,6 @@ body {
 
 .weather-specific span {
     margin: 0.2rem 0.5rem;
-}
-
-.waste-collection li p {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    overflow: hidden;
-}
-
-.waste-collection li p span {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex: 1;
-    min-width: 0;
 }
 
 .transport {
