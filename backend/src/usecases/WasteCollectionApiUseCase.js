@@ -34,7 +34,7 @@ const WasteCollectionApiUseCase = {
                 date: key,
                 type: collections[key].types.sort((a,b) => a.length - b.length).join(', ')
             }))
-            .splice(0, resultsLimit);
+            .slice(0, resultsLimit);
 
         return groupedCollections;
     }
